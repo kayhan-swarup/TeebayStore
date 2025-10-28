@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 const DEV_BASE_URL = 'http://10.0.2.2:8000'; // Android emulator localhost
 const DEV_BASE_URL_IOS = 'http://localhost:8000'; // iOS simulator localhost
 
@@ -6,8 +7,6 @@ export const API_BASE_URL = __DEV__
     ? DEV_BASE_URL
     : DEV_BASE_URL_IOS
   : 'https://api.teebay.com';
-
-import { Platform } from 'react-native';
 
 export const API_ENDPOINTS = {
   // Authentication endpoints
