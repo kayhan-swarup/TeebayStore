@@ -1,10 +1,10 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 
-export default function RegisterScreen() {
+export default function AllProductsScreen() {
   return (
     <View>
-      <Text>RegisterScreen</Text>
+      <Text>AllProductsScreen</Text>
     </View>
   );
 }
