@@ -1,17 +1,25 @@
 import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Product, RootStackParamList } from '../../types';
+import { DUMMY_PRODUCT, DUMMY_PRODUCTS } from '../../constants';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
-
 export default function AllProductsScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const renderProduct = ({ item }: { item: Product }) => <View />;
+  useEffect(() => {
+    // In real implementation, fetch products from API
+    setFilteredProducts(DUMMY_PRODUCTS);
+  }, []);
+  const renderProduct = ({ item }: { item: Product }) => (
+    <View>
+      <Text>{item.title}</Text>
+    </View>
+  );
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyIcon}>🛍️</Text>
