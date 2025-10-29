@@ -50,7 +50,7 @@ export interface Product {
   image?: string;
   seller: number;
   seller_details?: User;
-  created_date: string;
+  date_posted: string;
   views: number;
 }
 

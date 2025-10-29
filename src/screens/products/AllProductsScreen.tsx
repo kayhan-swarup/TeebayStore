@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Product, RootStackParamList } from '../../types';
 import { DUMMY_PRODUCT, DUMMY_PRODUCTS } from '../../constants';
+import ProductCard from '../../components/products/ProductCard';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export default function AllProductsScreen() {
@@ -16,9 +17,7 @@ export default function AllProductsScreen() {
     setFilteredProducts(DUMMY_PRODUCTS);
   }, []);
   const renderProduct = ({ item }: { item: Product }) => (
-    <View>
-      <Text>{item.title}</Text>
-    </View>
+    <ProductCard product={item} onPress={() => {}} />
   );
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>

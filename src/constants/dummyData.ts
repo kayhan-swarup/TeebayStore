@@ -21,7 +21,7 @@ export const DUMMY_PRODUCT: Product = {
   image: 'https://placehold.co/600x400?text=Cordless+Drill',
   seller: SAMPLE_SELLER.id,
   seller_details: SAMPLE_SELLER,
-  created_date: '2025-10-29T12:00:00Z',
+  date_posted: '2025-10-29T12:00:00Z',
   views: 123,
 };
 
