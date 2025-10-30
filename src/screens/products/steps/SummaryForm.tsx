@@ -26,12 +26,12 @@ const SummaryForm: React.FC<SummaryProps> = ({ formData }) => {
       <Card style={styles.card}>
         <Card.Content>
           {/* Image */}
-          {/* {formData.product_image && (
+          {formData.product_image && (
             <Image
               source={{ uri: formData.product_image?.uri }}
               style={styles.image}
             />
-          )} */}
+          )}
 
           {/* Title */}
           <Text style={styles.label}>Title</Text>

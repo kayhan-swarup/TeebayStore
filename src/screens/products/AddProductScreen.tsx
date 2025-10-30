@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Category, ProductCategory } from '../../constants';
@@ -110,10 +110,48 @@ export default function AddProductScreen() {
       setCurrentStep(currentStep + 1);
     }
   };
-  const validateStep = (stepIndex: number): boolean => {
-    // Add validation logic for each step here
-    // Return true if valid, false otherwise
-    return true;
+  const validateStep = (step: number): boolean => {
+    switch (step) {
+      case 1:
+        if (!formData.title.trim()) {
+          Alert.alert('Error', 'Please enter a product title');
+          return false;
+        }
+        return true;
+      case 2:
+        if (formData.categories.length === 0) {
+          Alert.alert('Error', 'Please select at least one category');
+          return false;
+        }
+        return true;
+      case 3:
+        if (!formData.description.trim()) {
+          Alert.alert('Error', 'Please enter a product description');
+          return false;
+        }
+        return true;
+      case 4:
+        if (!formData.product_image) {
+          Alert.alert('Error', 'Please upload a product image');
+          return false;
+        }
+        return true;
+      case 5:
+        if (
+          !formData.purchase_price ||
+          parseFloat(formData.purchase_price) <= 0
+        ) {
+          Alert.alert('Error', 'Please enter a valid purchase price');
+          return false;
+        }
+        if (!formData.rent_price || parseFloat(formData.rent_price) <= 0) {
+          Alert.alert('Error', 'Please enter a valid rent price');
+          return false;
+        }
+        return true;
+      default:
+        return true;
+    }
   };
 
   return (
