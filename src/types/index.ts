@@ -123,6 +123,7 @@ export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
   ProductDetails: { productId: number };
+  AddProduct: undefined;
 };
 
 // API Response types

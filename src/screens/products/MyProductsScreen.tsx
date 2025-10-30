@@ -37,7 +37,7 @@ export default function MyProductsScreen() {
   };
 
   const handleAddProduct = () => {
-    // navigation.navigate('AddProduct');
+    navigation.navigate('AddProduct');
   };
   const loadProducts = async () => {
     try {
