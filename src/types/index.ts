@@ -126,6 +126,8 @@ export type RootStackParamList = {
   Main: undefined;
   ProductDetails: { productId: number };
   AddProduct: undefined;
+  ProductDetail: { productId: number };
+  EditProduct: { productId: number };
 };
 
 // API Response types
