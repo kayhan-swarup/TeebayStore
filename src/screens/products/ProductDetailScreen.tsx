@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, Chip, Divider } from 'react-native-paper';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../types';
@@ -7,6 +7,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useProductStore } from '../../store/productStore';
 import { useAuthStore } from '../../store/authStore';
 import { DUMMY_PRODUCT } from '../../constants';
+import { BuyConfirmDialog } from '../../components/dialogs/BuyConfirmDialog';
+import { RentPeriodDialog } from '../../components/dialogs/RentPeriodDialog';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -16,6 +18,8 @@ const ProductDetailScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const { isLoading, selectedProduct, fetchProductById } = useProductStore();
   const { user } = useAuthStore();
+  const [showBuyDialog, setShowBuyDialog] = useState(false);
+  const [showRentDialog, setShowRentDialog] = useState(false);
 
   const { productId } = route.params;
 
@@ -27,17 +31,25 @@ const ProductDetailScreen = () => {
       day: 'numeric',
     });
   };
-  const handleBuy = () => {};
-  const handleRent = () => {};
+  const handleBuy = () => {
+    setShowBuyDialog(true);
+  };
+  const handleRent = () => {
+    setShowRentDialog(true);
+  };
 
   useEffect(() => {
     fetchProductById(productId);
   }, [productId]);
-  useEffect(() => {
-    console.log('Selected Product:', selectedProduct);
-  }, [selectedProduct]);
+
+  const handleBuyConfirm = async () => {
+    setShowBuyDialog(true);
+  };
+  const handleRentConfirm = async (fromDate: Date, toDate: Date) => {
+    setShowRentDialog(true);
+  };
+
   const product = selectedProduct || DUMMY_PRODUCT;
-  console.log('[ProductDetail] Original image URL:', product.product_image);
   const imageUrl = product.product_image;
   return (
     <ScrollView style={styles.container}>
@@ -114,6 +126,16 @@ const ProductDetailScreen = () => {
           Rent Product
         </Button>
       </View>
+      <BuyConfirmDialog
+        visible={showBuyDialog}
+        onDismiss={() => setShowBuyDialog(false)}
+        onConfirm={handleBuyConfirm}
+      />
+      <RentPeriodDialog
+        visible={showRentDialog}
+        onDismiss={() => setShowRentDialog(false)}
+        onConfirm={handleRentConfirm}
+      />
     </ScrollView>
   );
 };
