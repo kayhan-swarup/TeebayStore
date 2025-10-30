@@ -4,14 +4,20 @@ import { useNavigation } from '@react-navigation/native';
 import { Product, RootStackParamList } from '../../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FAB } from 'react-native-paper';
+import { useProductStore } from '../../store/productStore';
+import { useAuthStore } from '../../store/authStore';
+import ProductCard from '../../components/products/ProductCard';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export default function MyProductsScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const [myProducts, setMyProducts] = React.useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
+  const { myProducts, isLoading, fetchMyProducts } = useProductStore();
+  const { user } = useAuthStore();
 
-  const renderProduct = ({ item }: { item: any }) => <Text>{item.title}</Text>;
+  const renderProduct = ({ item }: { item: any }) => (
+    <ProductCard product={item} onPress={handleProductPress} />
+  );
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyIcon}>📦</Text>
@@ -23,6 +29,7 @@ export default function MyProductsScreen() {
   );
   const handleRefresh = async () => {
     setRefreshing(true);
+    await loadProducts();
     setRefreshing(false);
   };
   const handleProductPress = (product: Product) => {
@@ -32,6 +39,18 @@ export default function MyProductsScreen() {
   const handleAddProduct = () => {
     // navigation.navigate('AddProduct');
   };
+  const loadProducts = async () => {
+    try {
+      if (user?.id) {
+        await fetchMyProducts(user.id);
+      }
+    } catch (error) {
+      console.error('Failed to load products:', error);
+    }
+  };
+  React.useEffect(() => {
+    loadProducts();
+  }, []);
   return (
     <View style={styles.container}>
       <FlatList

@@ -15,14 +15,13 @@ export const DUMMY_PRODUCT: Product = {
   description:
     'A lightweight 18V cordless drill with two batteries and a charger. Perfect for DIY and light professional use.',
   categories: [ProductCategory.ELECTRONICS, ProductCategory.HOME_APPLIANCES],
-  purchase_price: 129.99,
-  rent_price: 9.99,
+  purchase_price: '129.99',
+  rent_price: '9.99',
   rent_option: RentOption.PER_DAY,
   image: 'https://placehold.co/600x400?text=Cordless+Drill',
   seller: SAMPLE_SELLER.id,
   seller_details: SAMPLE_SELLER,
   date_posted: '2025-10-26T12:00:00Z',
-  views: 123,
 };
 
 export const DUMMY_PRODUCTS: Product[] = [DUMMY_PRODUCT];

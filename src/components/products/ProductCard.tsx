@@ -93,9 +93,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Text style={styles.dateText}>
               Posted {formatDate(product.date_posted)}
             </Text>
-            {product.views !== undefined && (
-              <Text style={styles.viewsText}>{product.views} views</Text>
-            )}
           </View>
         </Card.Content>
       </Card>
@@ -163,10 +160,6 @@ const styles = StyleSheet.create({
     borderTopColor: '#E0E0E0',
   },
   dateText: {
-    fontSize: 12,
-    color: '#666666',
-  },
-  viewsText: {
     fontSize: 12,
     color: '#666666',
   },
