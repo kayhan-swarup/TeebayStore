@@ -67,11 +67,27 @@ export default function AddProductScreen() {
           />
         );
       case 4:
-        return <ImageForm />;
+        return (
+          <ImageForm
+            value={formData.product_image}
+            onChange={value => updateFormData('product_image', value)}
+          />
+        );
       case 5:
-        return <PriceForm />;
+        return (
+          <PriceForm
+            purchasePrice={formData.purchase_price}
+            rentPrice={formData.rent_price}
+            rentOption={formData.rent_option}
+            onChangePurchasePrice={value =>
+              updateFormData('purchase_price', value)
+            }
+            onChangeRentPrice={value => updateFormData('rent_price', value)}
+            onChangeRentOption={value => updateFormData('rent_option', value)}
+          />
+        );
       case 6:
-        return <SummaryForm />;
+        return <SummaryForm formData={formData} />;
       default:
         return null;
     }
