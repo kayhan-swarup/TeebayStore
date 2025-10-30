@@ -13,8 +13,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onPress,
   showActions = false,
 }) => {
-  const formatPrice = (price: number) => {
-    return `$${price.toFixed(2)}`;
+  const formatPrice = (price: string) => {
+    try {
+      return `$${parseFloat(price).toFixed(2)}`;
+    } catch (error) {
+      return `$${price}`;
+    }
   };
 
   const formatDate = (dateString: string) => {

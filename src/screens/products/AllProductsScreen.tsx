@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Product, RootStackParamList } from '../../types';
 import { DUMMY_PRODUCT, DUMMY_PRODUCTS } from '../../constants';
 import ProductCard from '../../components/products/ProductCard';
+import { useProductStore } from '../../store/productStore';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export default function AllProductsScreen() {
@@ -12,9 +13,9 @@ export default function AllProductsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const { products, isLoading, fetchProducts } = useProductStore();
   useEffect(() => {
-    // In real implementation, fetch products from API
-    setFilteredProducts(DUMMY_PRODUCTS);
+    loadProducts();
   }, []);
   const renderProduct = ({ item }: { item: Product }) => (
     <ProductCard product={item} onPress={() => {}} />
@@ -30,17 +31,24 @@ export default function AllProductsScreen() {
   );
   const handleRefresh = async () => {
     setRefreshing(true);
-
+    loadProducts();
     setRefreshing(false);
+  };
+  const loadProducts = async () => {
+    try {
+      await fetchProducts();
+    } catch (error) {
+      console.error('Failed to load products:', error);
+    }
   };
   return (
     <View style={styles.container}>
       <FlatList
-        data={filteredProducts}
+        data={products}
         renderItem={renderProduct}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={
-          filteredProducts.length === 0 ? styles.emptyList : styles.list
+          products.length === 0 ? styles.emptyList : styles.list
         }
         ListEmptyComponent={renderEmpty}
         refreshControl={

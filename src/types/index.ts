@@ -44,14 +44,13 @@ export interface Product {
   title: string;
   description: string;
   categories: ProductCategory[];
-  purchase_price: number;
-  rent_price: number;
+  purchase_price: string;
+  rent_price: string;
   rent_option: RentOption;
   image?: string;
   seller: number;
   seller_details?: User;
   date_posted: string;
-  views: number;
 }
 
 export interface CreateProductRequest {
