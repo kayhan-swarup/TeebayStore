@@ -11,6 +11,8 @@ import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { TextInput } from '../../components/common/TextInput';
 import { Button } from '../../components/common/Button';
+import { useAuthStore } from '../../store/authStore';
+import { ErrorMessage } from '../../components/common/ErrorMessage';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -20,6 +22,7 @@ export default function LoginScreen() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
+  const { login, isLoading, error, clearError } = useAuthStore();
 
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -40,9 +43,24 @@ export default function LoginScreen() {
   const handleSignupPress = () => {
     navigation.navigate('Register' as never);
   };
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async () => {};
+  const handleLogin = async () => {
+    console.log('Login pressed');
+    if (!validate()) return;
+    console.log('Validated');
+    clearError();
+
+    try {
+      await login({
+        email: email.trim(),
+        password,
+      });
+      // Navigation will be handled by App.tsx based on auth state
+    } catch (err) {
+      // Error is handled by store
+      console.error('Login failed:', err);
+    }
+  };
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -55,6 +73,9 @@ export default function LoginScreen() {
         <View style={styles.content}>
           {/* Header */}
           <Text style={styles.title}>SIGN IN</Text>
+
+          {/* Error Message */}
+          {error && <ErrorMessage message={error} onDismiss={clearError} />}
 
           {/* Email Input */}
           <TextInput

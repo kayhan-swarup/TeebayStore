@@ -5,11 +5,12 @@ import AuthNavigator from './AuthNavigator';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import MainTabNavigator from './MainTabNavigator';
+import { useAuthStore } from '../store/authStore';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
-  const isAuthenticated = true; // Replace with actual authentication logic
+  const { isAuthenticated, isLoading, user } = useAuthStore();
 
   return (
     <NavigationContainer>
