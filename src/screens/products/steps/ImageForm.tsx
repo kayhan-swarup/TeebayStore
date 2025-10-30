@@ -1,6 +1,7 @@
 import { Image, StyleSheet, View } from 'react-native';
 import React from 'react';
 import { Text, Button as PaperButton } from 'react-native-paper';
+import { openCamera, openGallery } from '../../../utils/imagePicker';
 
 interface ImageProps {
   value: any;
@@ -8,9 +9,13 @@ interface ImageProps {
 }
 
 const ImageForm: React.FC<ImageProps> = ({ value, onChange }) => {
-  const handleCamera = async () => {};
+  const handleCamera = async () => {
+    await openCamera(onChange);
+  };
 
-  const handleGallery = async () => {};
+  const handleGallery = async () => {
+    await openGallery(onChange);
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Upload Picture</Text>
