@@ -4,6 +4,7 @@ import { LoginRequest, RegisterRequest, User } from '../types';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { API_ENDPOINTS } from '../constants';
+import { authService } from '../api/services/auth.service';
 
 interface AuthState {
   user: User | null;
@@ -30,11 +31,8 @@ export const useAuthStore = create<AuthState>()(
       login: async (data: LoginRequest) => {
         try {
           set({ isLoading: true, error: null });
-          const response = await apiClient.post<{ user: User }>(
-            API_ENDPOINTS.AUTH.LOGIN,
-            data,
-          );
-          set({ user: response.data.user, isAuthenticated: true });
+          const { user } = await authService.login(data);
+          set({ user, isAuthenticated: true });
         } catch (error) {
           set({ error: 'Login failed. Please try again.', isLoading: false });
         }
