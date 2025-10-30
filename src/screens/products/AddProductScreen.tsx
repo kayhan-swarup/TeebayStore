@@ -60,7 +60,12 @@ export default function AddProductScreen() {
           />
         );
       case 3:
-        return <DescriptionForm />;
+        return (
+          <DescriptionForm
+            value={formData.description}
+            onChange={value => updateFormData('description', value)}
+          />
+        );
       case 4:
         return <ImageForm />;
       case 5:
@@ -111,6 +116,7 @@ export default function AddProductScreen() {
           {currentStep === 1 ? 'CANCEL' : 'BACK'}
         </Button>
         <Button
+          mode="contained"
           onPress={currentStep === TOTAL_STEPS ? handleSubmit : handleNext}
           style={styles.nextButton}
           loading={isLoading}
