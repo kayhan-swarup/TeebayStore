@@ -1,3 +1,5 @@
+import { Category } from '../constants';
+
 // User types
 export interface User {
   id: number;
@@ -56,11 +58,11 @@ export interface Product {
 export interface CreateProductRequest {
   title: string;
   description: string;
-  categories: ProductCategory[];
+  categories: Category[];
   purchase_price: number;
   rent_price: number;
   rent_option: RentOption;
-  image?: any;
+  product_image?: any;
   seller: number;
 }
 

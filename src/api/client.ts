@@ -97,3 +97,39 @@ export const storage = {
   },
 };
 export default apiClient;
+
+export const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    const axiosError = error as AxiosError<{
+      detail?: string;
+      message?: string;
+      error?: string;
+      [key: string]: any;
+    }>;
+
+    if (axiosError.response?.data) {
+      const data = axiosError.response.data;
+
+      // Try different error message formats
+      if (data.detail) return data.detail;
+      if (data.message) return data.message;
+      if (data.error) return data.error;
+
+      // Check for field-specific errors
+      const firstKey = Object.keys(data)[0];
+      if (firstKey && Array.isArray(data[firstKey])) {
+        return data[firstKey][0];
+      }
+    }
+
+    if (axiosError.message) {
+      return axiosError.message;
+    }
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'An unexpected error occurred';
+};

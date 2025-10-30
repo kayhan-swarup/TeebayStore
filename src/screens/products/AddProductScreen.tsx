@@ -28,7 +28,7 @@ export default function AddProductScreen() {
   const navigation = useNavigation();
   const [currentStep, setCurrentStep] = useState(1);
   const { user } = useAuthStore();
-  const { isLoading } = useProductStore();
+  const { createProduct, isLoading } = useProductStore();
 
   const [formData, setFormData] = useState<ProductFormData>({
     title: '',
@@ -99,7 +99,43 @@ export default function AddProductScreen() {
       navigation.goBack();
     }
   };
-  const handleSubmit = () => {};
+  const handleSubmit = async () => {
+    if (!user) {
+      Alert.alert('Error', 'You must be logged in to create a product');
+      return;
+    }
+    try {
+      const productData = {
+        title: formData.title,
+        description: formData.description,
+        categories: formData.categories,
+        product_image: formData.product_image,
+        purchase_price: formData.purchase_price,
+        rent_price: formData.rent_price,
+        rent_option: formData.rent_option,
+        seller: user.id,
+      };
+
+      await createProduct(productData as any);
+
+      Alert.alert('Success', 'Product created successfully', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error: any) {
+      console.error('Product creation error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        'Failed to create product';
+
+      Alert.alert('Error', errorMessage);
+    }
+  };
 
   const handleNext = () => {
     if (!validateStep(currentStep)) {
