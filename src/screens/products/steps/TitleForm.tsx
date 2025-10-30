@@ -6,7 +6,7 @@ interface TitleProps {
   value: string;
   onChange: (value: string) => void;
 }
-export default function TitleForm({ value, onChange }: TitleProps) {
+export const TitleForm: React.FC<TitleProps> = ({ value, onChange }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Product Title</Text>
@@ -22,7 +22,7 @@ export default function TitleForm({ value, onChange }: TitleProps) {
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

@@ -29,3 +29,19 @@ export enum RentOption {
   PER_HOUR = 'PER_HOUR',
   PER_DAY = 'PER_DAY',
 }
+export type Category =
+  | 'electronics'
+  | 'furniture'
+  | 'home_appliances'
+  | 'sporting_goods'
+  | 'outdoor'
+  | 'toys';
+
+export const CATEGORIES: Array<{ value: Category; label: string }> = [
+  { value: 'electronics', label: 'Electronics' },
+  { value: 'furniture', label: 'Furniture' },
+  { value: 'home_appliances', label: 'Home Appliances' },
+  { value: 'sporting_goods', label: 'Sporting Goods' },
+  { value: 'outdoor', label: 'Outdoor' },
+  { value: 'toys', label: 'Toys' },
+];

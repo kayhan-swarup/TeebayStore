@@ -1,13 +1,13 @@
 import { View, Text, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { ProductCategory } from '../../constants';
+import { Category, ProductCategory } from '../../constants';
 import { useAuthStore } from '../../store/authStore';
 import { StepIndicator } from '../../components/forms/StepIndicator';
 import { Button } from 'react-native-paper';
 import { useProductStore } from '../../store/productStore';
-import TitleForm from './steps/TitleForm';
-import CategoryForm from './steps/CategoryForm';
+import { TitleForm } from './steps/TitleForm';
+import { CategoryForm } from './steps/CategoryForm';
 import DescriptionForm from './steps/DescriptionForm';
 import ImageForm from './steps/ImageForm';
 import PriceForm from './steps/PriceForm';
@@ -15,7 +15,7 @@ import SummaryForm from './steps/SummaryForm';
 
 interface ProductFormData {
   title: string;
-  categories: ProductCategory[];
+  categories: Category[];
   description: string;
   product_image: any;
   purchase_price: string;
@@ -23,15 +23,6 @@ interface ProductFormData {
   rent_option: 'hour' | 'day';
 }
 const TOTAL_STEPS = 6;
-
-const productFormSteps: React.FC[] = [
-  TitleForm,
-  CategoryForm,
-  DescriptionForm,
-  ImageForm,
-  PriceForm,
-  SummaryForm,
-];
 
 export default function AddProductScreen() {
   const navigation = useNavigation();
@@ -48,12 +39,36 @@ export default function AddProductScreen() {
     rent_price: '',
     rent_option: 'day',
   });
+  const updateFormData = (field: keyof ProductFormData, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   const renderStep = () => {
-    try {
-      const StepComponent = productFormSteps[currentStep - 1];
-      return <StepComponent />;
-    } catch (e) {
-      return <Text>Step not found</Text>;
+    switch (currentStep) {
+      case 1:
+        return (
+          <TitleForm
+            value={formData.title}
+            onChange={value => updateFormData('title', value)}
+          />
+        );
+      case 2:
+        return (
+          <CategoryForm
+            value={formData.categories}
+            onChange={value => updateFormData('categories', value)}
+          />
+        );
+      case 3:
+        return <DescriptionForm />;
+      case 4:
+        return <ImageForm />;
+      case 5:
+        return <PriceForm />;
+      case 6:
+        return <SummaryForm />;
+      default:
+        return null;
     }
   };
   const handleBack = () => {
