@@ -1,5 +1,6 @@
-import { API_BASE_URL, API_CONFIG } from '../constants';
+import { API_BASE_URL, API_CONFIG, STORAGE_KEYS } from '../constants';
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -79,4 +80,17 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+export const storage = {
+  async setUser(user: any): Promise<void> {
+    await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+  },
+  async getUser(): Promise<any | null> {
+    const userData = await AsyncStorage.getItem(STORAGE_KEYS.USER);
+    return userData ? JSON.parse(userData) : null;
+  },
+  async removeUser(): Promise<void> {
+    await AsyncStorage.removeItem(STORAGE_KEYS.USER);
+  },
+};
 export default apiClient;

@@ -3,6 +3,7 @@ export const STORAGE_KEYS = {
   USER_TOKEN: '@teebay_user_token',
   USER_DATA: '@teebay_user_data',
   USER_ID: '@teebay_user_id',
+  USER: '@teebay_user',
 
   // Biometric
   BIOMETRIC_ENABLED: '@teebay_biometric_enabled',
