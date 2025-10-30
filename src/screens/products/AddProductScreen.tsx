@@ -24,7 +24,7 @@ interface ProductFormData {
 }
 const TOTAL_STEPS = 6;
 
-const productFormSteps = [
+const productFormSteps: React.FC[] = [
   TitleForm,
   CategoryForm,
   DescriptionForm,
@@ -35,7 +35,7 @@ const productFormSteps = [
 
 export default function AddProductScreen() {
   const navigation = useNavigation();
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
   const { user } = useAuthStore();
   const { isLoading } = useProductStore();
 
@@ -48,15 +48,37 @@ export default function AddProductScreen() {
     rent_price: '',
     rent_option: 'day',
   });
-  const renderStep = () => (
-    <View>
-      <Text>Step {currentStep}</Text>
-    </View>
-  );
-  const handleBack = () => {};
+  const renderStep = () => {
+    try {
+      const StepComponent = productFormSteps[currentStep - 1];
+      return <StepComponent />;
+    } catch (e) {
+      return <Text>Step not found</Text>;
+    }
+  };
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    } else {
+      navigation.goBack();
+    }
+  };
   const handleSubmit = () => {};
 
-  const handleNext = () => {};
+  const handleNext = () => {
+    if (!validateStep(currentStep)) {
+      return;
+    }
+
+    if (currentStep < TOTAL_STEPS) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+  const validateStep = (stepIndex: number): boolean => {
+    // Add validation logic for each step here
+    // Return true if valid, false otherwise
+    return true;
+  };
 
   return (
     <View style={styles.container}>
