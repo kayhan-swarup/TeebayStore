@@ -92,5 +92,8 @@ export const storage = {
   async removeUser(): Promise<void> {
     await AsyncStorage.removeItem(STORAGE_KEYS.USER);
   },
+  async clearAll(): Promise<void> {
+    await AsyncStorage.multiRemove([STORAGE_KEYS.USER]);
+  },
 };
 export default apiClient;

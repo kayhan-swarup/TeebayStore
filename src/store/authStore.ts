@@ -40,7 +40,10 @@ export const useAuthStore = create<AuthState>()(
 
       register: async (data: RegisterRequest) => {},
 
-      logout: async () => {},
+      logout: async () => {
+        await storage.clearAll();
+        set({ user: null, isAuthenticated: false });
+      },
 
       clearError: () => {
         set({ error: null });
