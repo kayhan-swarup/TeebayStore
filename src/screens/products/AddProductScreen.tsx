@@ -6,6 +6,12 @@ import { useAuthStore } from '../../store/authStore';
 import { StepIndicator } from '../../components/forms/StepIndicator';
 import { Button } from 'react-native-paper';
 import { useProductStore } from '../../store/productStore';
+import TitleForm from './steps/TitleForm';
+import CategoryForm from './steps/CategoryForm';
+import DescriptionForm from './steps/DescriptionForm';
+import ImageForm from './steps/ImageForm';
+import PriceForm from './steps/PriceForm';
+import SummaryForm from './steps/SummaryForm';
 
 interface ProductFormData {
   title: string;
@@ -17,6 +23,15 @@ interface ProductFormData {
   rent_option: 'hour' | 'day';
 }
 const TOTAL_STEPS = 6;
+
+const productFormSteps = [
+  TitleForm,
+  CategoryForm,
+  DescriptionForm,
+  ImageForm,
+  PriceForm,
+  SummaryForm,
+];
 
 export default function AddProductScreen() {
   const navigation = useNavigation();
