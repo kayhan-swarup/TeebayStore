@@ -18,8 +18,11 @@ export default function AllProductsScreen() {
     loadProducts();
   }, []);
   const renderProduct = ({ item }: { item: Product }) => (
-    <ProductCard product={item} onPress={() => {}} />
+    <ProductCard product={item} onPress={handleProductPress} />
   );
+  const handleProductPress = (product: Product) => {
+    navigation.navigate('ProductDetail', { productId: product.id });
+  };
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyIcon}>🛍️</Text>

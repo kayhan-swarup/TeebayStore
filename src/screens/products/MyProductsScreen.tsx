@@ -33,7 +33,7 @@ export default function MyProductsScreen() {
     setRefreshing(false);
   };
   const handleProductPress = (product: Product) => {
-    // navigation.navigate('EditProduct', { productId: product.id });
+    navigation.navigate('EditProduct', { productId: product.id });
   };
 
   const handleAddProduct = () => {
