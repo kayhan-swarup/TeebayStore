@@ -49,7 +49,7 @@ export interface Product {
   purchase_price: string;
   rent_price: string;
   rent_option: RentOption;
-  image?: string;
+  product_image?: string;
   seller: number;
   seller_details?: User;
   date_posted: string;

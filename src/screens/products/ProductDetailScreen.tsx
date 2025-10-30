@@ -16,8 +16,7 @@ const ProductDetailScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const { isLoading, selectedProduct, fetchProductById } = useProductStore();
   const { user } = useAuthStore();
-  const imageUrl =
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTovspABsKXsT0yMhsjWy0sDt56wmyxp0wR_w&s';
+
   const { productId } = route.params;
 
   const formatDate = (dateString: string) => {
@@ -34,7 +33,12 @@ const ProductDetailScreen = () => {
   useEffect(() => {
     fetchProductById(productId);
   }, [productId]);
+  useEffect(() => {
+    console.log('Selected Product:', selectedProduct);
+  }, [selectedProduct]);
   const product = selectedProduct || DUMMY_PRODUCT;
+  console.log('[ProductDetail] Original image URL:', product.product_image);
+  const imageUrl = product.product_image;
   return (
     <ScrollView style={styles.container}>
       <Card style={styles.card}>
