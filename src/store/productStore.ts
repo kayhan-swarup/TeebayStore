@@ -8,12 +8,14 @@ import { getErrorMessage } from '../api/client';
 interface ProductState {
   products: Product[];
   myProducts: Product[];
+  selectedProduct: Product | null;
   isLoading: boolean;
   error: string | null;
 
   // Actions
   fetchProducts: () => Promise<void>;
   fetchMyProducts: (userId: number) => Promise<void>;
+  fetchProductById: (id: number) => Promise<void>;
   createProduct: (data: CreateProductRequest) => Promise<Product>;
   clearError: () => void;
 }
@@ -21,6 +23,7 @@ interface ProductState {
 export const useProductStore = create<ProductState>((set, get) => ({
   products: [],
   myProducts: [],
+  selectedProduct: null,
   isLoading: false,
   error: null,
 
@@ -58,6 +61,18 @@ export const useProductStore = create<ProductState>((set, get) => ({
         isLoading: false,
       });
       throw error;
+    }
+  },
+  fetchProductById: async (id: number) => {
+    try {
+      set({ isLoading: true, error: null });
+      const product = await productService.getProductById(id);
+      set({ selectedProduct: product, isLoading: false });
+    } catch (error) {
+      set({
+        error: getErrorMessage(error),
+        isLoading: false,
+      });
     }
   },
 

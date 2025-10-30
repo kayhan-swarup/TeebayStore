@@ -14,12 +14,12 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const ProductDetailScreen = () => {
   const route = useRoute<ProductDetailRouteProp>();
   const navigation = useNavigation<NavigationProp>();
-  const { isLoading } = useProductStore();
+  const { isLoading, selectedProduct, fetchProductById } = useProductStore();
   const { user } = useAuthStore();
   const imageUrl =
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTovspABsKXsT0yMhsjWy0sDt56wmyxp0wR_w&s';
   const { productId } = route.params;
-  const product = DUMMY_PRODUCT;
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -30,9 +30,11 @@ const ProductDetailScreen = () => {
   };
   const handleBuy = () => {};
   const handleRent = () => {};
+
   useEffect(() => {
-    // fetch product by id
+    fetchProductById(productId);
   }, [productId]);
+  const product = selectedProduct || DUMMY_PRODUCT;
   return (
     <ScrollView style={styles.container}>
       <Card style={styles.card}>
@@ -43,7 +45,7 @@ const ProductDetailScreen = () => {
 
         <Card.Content>
           {/* Title */}
-          <Text style={styles.title}>{product.title}</Text>
+          <Text style={styles.title}>{product?.title}</Text>
 
           {/* Posted Date */}
           <Text style={styles.date}>
@@ -66,7 +68,7 @@ const ProductDetailScreen = () => {
 
           {/* Description */}
           <Text style={styles.label}>Description</Text>
-          <Text style={styles.description}>{product.description}</Text>
+          <Text style={styles.description}>{product?.description}</Text>
 
           <Divider style={styles.divider} />
 
@@ -78,7 +80,8 @@ const ProductDetailScreen = () => {
 
           <Text style={[styles.label, styles.labelSpaced]}>Rent Price</Text>
           <Text style={styles.price}>
-            ${parseFloat(product.rent_price).toFixed(2)} / {product.rent_option}
+            ${parseFloat(product.rent_price).toFixed(2)} /{' '}
+            {product?.rent_option}
           </Text>
 
           <Divider style={styles.divider} />

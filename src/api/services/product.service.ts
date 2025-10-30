@@ -46,4 +46,10 @@ export const productService = {
     );
     return response.data;
   },
+  async getProductById(id: number): Promise<Product> {
+    const response = await apiClient.get<Product>(
+      API_ENDPOINTS.PRODUCTS.DETAIL(id),
+    );
+    return response.data;
+  },
 };
