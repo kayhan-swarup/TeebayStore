@@ -1,10 +1,109 @@
-import { View, Text } from 'react-native';
-import React from 'react';
+import {
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import React, { useState } from 'react';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
-export default function TransactionsScreen() {
+const TransactionsScreen = () => {
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: 'bought', title: 'BOUGHT' },
+    { key: 'sold', title: 'SOLD' },
+    { key: 'borrowed', title: 'BORROW' },
+    { key: 'lent', title: 'LENT' },
+  ]);
+
+  const BoughtRoute = () => <View />;
+  const SoldRoute = () => <View />;
+  const BorrowedRoute = () => <View />;
+  const LentRoute = () => <View />;
+  const renderScene = SceneMap({
+    bought: BoughtRoute,
+    sold: SoldRoute,
+    borrowed: BorrowedRoute,
+    lent: LentRoute,
+  });
+
+  const renderTabBar = (props: any) => (
+    <TabBar
+      {...props}
+      indicatorStyle={styles.tabIndicator}
+      style={styles.tabBar}
+      labelStyle={styles.tabLabel}
+      activeColor="#6200EE"
+      inactiveColor="#666666"
+      scrollEnabled={false}
+      tabStyle={styles.tabStyle}
+    />
+  );
+
   return (
-    <View>
-      <Text>TransactionsScreen</Text>
+    <View style={styles.container}>
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+        renderTabBar={renderTabBar}
+      />
     </View>
   );
-}
+};
+
+export default TransactionsScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+  },
+  tabBar: {
+    backgroundColor: '#FFFFFF',
+    elevation: 2,
+  },
+  tabIndicator: {
+    backgroundColor: '#6200EE',
+    height: 3,
+  },
+  tabStyle: {
+    flex: 1,
+  },
+  tabLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  emptyList: {
+    flex: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+    paddingTop: 60,
+  },
+  emptyIcon: {
+    fontSize: 64,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000000',
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+});
