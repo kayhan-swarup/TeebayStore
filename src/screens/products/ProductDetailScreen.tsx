@@ -10,6 +10,7 @@ import { DUMMY_PRODUCT } from '../../constants';
 import { BuyConfirmDialog } from '../../components/dialogs/BuyConfirmDialog';
 import { RentPeriodDialog } from '../../components/dialogs/RentPeriodDialog';
 import { useTransactionStore } from '../../store/transactionStore';
+import { Loading } from '../../components/common/Loading';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -105,6 +106,10 @@ const ProductDetailScreen = () => {
 
   const product = selectedProduct || DUMMY_PRODUCT;
   const imageUrl = product.product_image;
+
+  if (isLoading && !selectedProduct) {
+    return <Loading />;
+  }
   return (
     <ScrollView style={styles.container}>
       <Card style={styles.card}>

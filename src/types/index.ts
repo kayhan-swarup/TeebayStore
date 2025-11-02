@@ -45,7 +45,7 @@ export interface Product {
   id: number;
   title: string;
   description: string;
-  categories: ProductCategory[];
+  categories: Category[];
   purchase_price: string;
   rent_price: string;
   rent_option: 'hour' | 'day';

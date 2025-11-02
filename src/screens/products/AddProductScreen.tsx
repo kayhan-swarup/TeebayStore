@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Category, ProductCategory } from '../../constants';
+import { Category } from '../../constants';
 import { useAuthStore } from '../../store/authStore';
 import { StepIndicator } from '../../components/forms/StepIndicator';
 import { Button } from 'react-native-paper';
