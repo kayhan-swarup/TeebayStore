@@ -17,6 +17,10 @@ interface ProductState {
   fetchMyProducts: (userId: number) => Promise<void>;
   fetchProductById: (id: number) => Promise<void>;
   createProduct: (data: CreateProductRequest) => Promise<Product>;
+  updateProduct: (
+    id: number,
+    data: Partial<CreateProductRequest>,
+  ) => Promise<void>;
   clearError: () => void;
 }
 
@@ -73,6 +77,28 @@ export const useProductStore = create<ProductState>((set, get) => ({
         error: getErrorMessage(error),
         isLoading: false,
       });
+    }
+  },
+  updateProduct: async (id: number, data: Partial<CreateProductRequest>) => {
+    try {
+      set({ isLoading: true, error: null });
+      const updatedProduct = await productService.updateProduct(id, data);
+      set(state => ({
+        myProducts: state.myProducts.map(p =>
+          p.id === id ? updatedProduct : p,
+        ),
+        selectedProduct:
+          state.selectedProduct?.id === id
+            ? updatedProduct
+            : state.selectedProduct,
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({
+        error: getErrorMessage(error),
+        isLoading: false,
+      });
+      throw error;
     }
   },
 

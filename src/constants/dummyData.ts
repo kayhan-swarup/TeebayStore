@@ -14,7 +14,7 @@ export const DUMMY_PRODUCT: Product = {
   title: 'Cordless Drill - 18V',
   description:
     'A lightweight 18V cordless drill with two batteries and a charger. Perfect for DIY and light professional use.',
-  categories: [ProductCategory.ELECTRONICS, ProductCategory.HOME_APPLIANCES],
+  categories: ['electronics', 'home_appliances'],
   purchase_price: '129.99',
   rent_price: '9.99',
   rent_option: 'day',

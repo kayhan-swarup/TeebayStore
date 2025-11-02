@@ -24,7 +24,8 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const EditProductScreen = () => {
   const route = useRoute<EditProductRouteProp>();
   const navigation = useNavigation<NavigationProp>();
-  const { selectedProduct, isLoading, fetchProductById } = useProductStore();
+  const { selectedProduct, isLoading, fetchProductById, updateProduct } =
+    useProductStore();
   const { productId } = route.params;
 
   const [title, setTitle] = useState('');
@@ -85,7 +86,65 @@ const EditProductScreen = () => {
     await openGallery(handleImageChange);
   };
 
-  const handleSubmit = async () => {};
+  const validateForm = (): boolean => {
+    if (!title.trim()) {
+      Alert.alert('Error', 'Please enter a product title');
+      return false;
+    }
+    if (categories.length === 0) {
+      Alert.alert('Error', 'Please select at least one category');
+      return false;
+    }
+    if (!description.trim()) {
+      Alert.alert('Error', 'Please enter a product description');
+      return false;
+    }
+    if (!purchasePrice || parseFloat(purchasePrice) <= 0) {
+      Alert.alert('Error', 'Please enter a valid purchase price');
+      return false;
+    }
+    if (!rentPrice || parseFloat(rentPrice) <= 0) {
+      Alert.alert('Error', 'Please enter a valid rent price');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+    try {
+      const updateData: any = {
+        title,
+        description,
+        categories,
+        purchase_price: purchasePrice,
+        rent_price: rentPrice,
+        rent_option: rentOption,
+      };
+      if (productImage) {
+        updateData.product_image = productImage;
+      }
+      await updateProduct(productId, updateData);
+      Alert.alert('Success', 'Product updated successfully', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error: any) {
+      console.error('Product update error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        'Failed to update product';
+
+      Alert.alert('Error', errorMessage);
+    }
+  };
 
   if (isLoading && !selectedProduct) {
     return <Loading />;

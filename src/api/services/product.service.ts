@@ -52,4 +52,45 @@ export const productService = {
     );
     return response.data;
   },
+  async updateProduct(
+    id: number,
+    data: Partial<CreateProductRequest>,
+  ): Promise<Product> {
+    const formData = new FormData();
+
+    // Append fields that exist
+    if (data.title) formData.append('title', data.title);
+    if (data.description) formData.append('description', data.description);
+    if (data.purchase_price)
+      formData.append('purchase_price', data.purchase_price);
+    if (data.rent_price) formData.append('rent_price', data.rent_price);
+    if (data.rent_option) formData.append('rent_option', data.rent_option);
+
+    // Append categories if provided
+    if (data.categories) {
+      data.categories.forEach(category => {
+        formData.append('categories', category);
+      });
+    }
+
+    // Append image if provided
+    if (data.product_image) {
+      formData.append('product_image', {
+        uri: data.product_image.uri,
+        type: data.product_image.type || 'image/jpeg',
+        name: data.product_image.fileName || 'product.jpg',
+      } as any);
+    }
+
+    const response = await apiClient.patch<Product>(
+      API_ENDPOINTS.PRODUCTS.UPDATE(id),
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return response.data;
+  },
 };
