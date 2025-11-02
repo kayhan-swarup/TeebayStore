@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Chip, Divider } from 'react-native-paper';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -9,6 +9,7 @@ import { useAuthStore } from '../../store/authStore';
 import { DUMMY_PRODUCT } from '../../constants';
 import { BuyConfirmDialog } from '../../components/dialogs/BuyConfirmDialog';
 import { RentPeriodDialog } from '../../components/dialogs/RentPeriodDialog';
+import { useTransactionStore } from '../../store/transactionStore';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -17,6 +18,11 @@ const ProductDetailScreen = () => {
   const route = useRoute<ProductDetailRouteProp>();
   const navigation = useNavigation<NavigationProp>();
   const { isLoading, selectedProduct, fetchProductById } = useProductStore();
+  const {
+    isLoading: transactionLoading,
+    createPurchase,
+    createRental,
+  } = useTransactionStore();
   const { user } = useAuthStore();
   const [showBuyDialog, setShowBuyDialog] = useState(false);
   const [showRentDialog, setShowRentDialog] = useState(false);
@@ -43,10 +49,58 @@ const ProductDetailScreen = () => {
   }, [productId]);
 
   const handleBuyConfirm = async () => {
-    setShowBuyDialog(true);
+    if (!selectedProduct || !user) return;
+
+    try {
+      await createPurchase(user.id, selectedProduct.id);
+      setShowBuyDialog(false);
+      Alert.alert('Success', 'Product purchased successfully!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error: any) {
+      console.error('Purchase error:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        'Failed to purchase product';
+      Alert.alert('Error', errorMessage);
+    }
   };
   const handleRentConfirm = async (fromDate: Date, toDate: Date) => {
-    setShowRentDialog(true);
+    if (!selectedProduct || !user) return;
+
+    try {
+      // Format dates to ISO string
+      const startDate = fromDate.toISOString().split('T')[0];
+      const endDate = toDate.toISOString().split('T')[0];
+
+      await createRental(
+        user.id,
+        selectedProduct.id,
+        selectedProduct.rent_option,
+        startDate,
+        endDate,
+      );
+      setShowRentDialog(false);
+      Alert.alert('Success', 'Product rented successfully!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error: any) {
+      console.error('Rental error:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        'Failed to rent product';
+      Alert.alert('Error', errorMessage);
+    }
   };
 
   const product = selectedProduct || DUMMY_PRODUCT;

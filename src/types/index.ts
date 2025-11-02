@@ -48,7 +48,7 @@ export interface Product {
   categories: ProductCategory[];
   purchase_price: string;
   rent_price: string;
-  rent_option: RentOption;
+  rent_option: 'hour' | 'day';
   product_image?: string;
   seller: number;
   seller_details?: User;
@@ -61,7 +61,7 @@ export interface CreateProductRequest {
   categories: Category[];
   purchase_price: number;
   rent_price: number;
-  rent_option: RentOption;
+  rent_option: 'hour' | 'day';
   product_image?: any;
   seller: number;
 }
@@ -70,23 +70,20 @@ export interface CreateProductRequest {
 export interface Purchase {
   id: number;
   buyer: number;
-  buyer_details?: User;
-  product: number;
-  product_details?: Product;
-  date_purchased: string;
-  seller?: number;
+  seller: number;
+  product: number | Product; // Can be populated or just ID
+  purchase_date: string;
 }
 
 export interface Rent {
   id: number;
   renter: number;
-  renter_details?: User;
-  product: number;
-  product_details?: Product;
-  rent_from: string;
-  rent_to: string;
-  total_price: number;
-  seller?: number;
+  seller: number;
+  product: number | Product; // Can be populated or just ID
+  rent_period_start_date: string;
+  rent_period_end_date: string;
+  total_price: string | null;
+  rent_date: string;
 }
 
 export interface CreatePurchaseRequest {

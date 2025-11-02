@@ -17,7 +17,7 @@ export const DUMMY_PRODUCT: Product = {
   categories: [ProductCategory.ELECTRONICS, ProductCategory.HOME_APPLIANCES],
   purchase_price: '129.99',
   rent_price: '9.99',
-  rent_option: RentOption.PER_DAY,
+  rent_option: 'day',
   product_image: 'https://placehold.co/600x400?text=Cordless+Drill',
   seller: SAMPLE_SELLER.id,
   seller_details: SAMPLE_SELLER,
