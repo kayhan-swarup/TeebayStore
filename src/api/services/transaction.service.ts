@@ -30,4 +30,10 @@ export const transactionsService = {
     );
     return response.data;
   },
+  async getPurchases(): Promise<Purchase[]> {
+    const response = await apiClient.get<Purchase[]>(
+      API_ENDPOINTS.TRANSACTIONS.PURCHASES.LIST,
+    );
+    return response.data;
+  },
 };

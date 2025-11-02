@@ -1,11 +1,12 @@
 import { create } from 'zustand';
-import { Purchase, Rent } from '../types';
+import { Product, Purchase, Rent } from '../types';
 import { transactionsService } from '../api/services/transaction.service';
 import { getErrorMessage } from '../api/client';
+import { productService } from '../api/services/product.service';
 interface TransactionState {
   purchases: Purchase[];
   rentals: Rent[];
-  myPurchases: Purchase[];
+  myPurchases: Product[];
   myRentals: Rent[];
   soldItems: Purchase[];
   lentItems: Rent[];
@@ -20,6 +21,7 @@ interface TransactionState {
     startDate: string,
     endDate: string,
   ) => Promise<Rent>;
+  fetchMyPurchases: (userId: number) => Promise<void>;
 }
 
 export const useTransactionStore = create<TransactionState>((set, get) => ({
@@ -42,7 +44,7 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
 
       // Add to myPurchases
       set(state => ({
-        myPurchases: [purchase, ...state.myPurchases],
+        purchases: [purchase, ...state.purchases],
         isLoading: false,
       }));
 
@@ -79,6 +81,27 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
     } catch (error) {
       set({ error: getErrorMessage(error), isLoading: false });
       throw error;
+    }
+  },
+  fetchMyPurchases: async (userId: number) => {
+    try {
+      set({ isLoading: true, error: null });
+      const purchases = await transactionsService.getPurchases();
+      console.log('Fetched purchases:', purchases);
+      set({ purchases, isLoading: false });
+      const myPurchasedProducts: Product[] = [];
+      for (const purchase of purchases) {
+        if (purchase.buyer === userId) {
+          const product = await productService.getProductById(
+            purchase.product as number,
+          );
+          myPurchasedProducts.push(product);
+        }
+      }
+      console.log('My purchased products:', myPurchasedProducts);
+      set({ myPurchases: myPurchasedProducts, isLoading: false });
+    } catch (error) {
+      set({ error: getErrorMessage(error), isLoading: false });
     }
   },
 }));

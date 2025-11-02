@@ -6,20 +6,55 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { useAuthStore } from '../../store/authStore';
+import { useTransactionStore } from '../../store/transactionStore';
+import ProductCard from '../../components/products/ProductCard';
 
 const TransactionsScreen = () => {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
   const [routes] = useState([
     { key: 'bought', title: 'BOUGHT' },
     { key: 'sold', title: 'SOLD' },
     { key: 'borrowed', title: 'BORROW' },
     { key: 'lent', title: 'LENT' },
   ]);
+  const EmptyState = ({ message }: { message: string }) => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyIcon}>📦</Text>
+      <Text style={styles.emptyTitle}>No Transactions</Text>
+      <Text style={styles.emptyText}>{message}</Text>
+    </View>
+  );
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    // await loadAllTransactions();
+    setRefreshing(false);
+  };
 
-  const BoughtRoute = () => <View />;
+  const BoughtRoute = () => (
+    <FlatList
+      data={myPurchases}
+      renderItem={({ item }) => {
+        return <ProductCard product={item} />;
+      }}
+      keyExtractor={item => item.id.toString()}
+      contentContainerStyle={styles.emptyList}
+      ListEmptyComponent={
+        <EmptyState message="You haven't purchased any products yet" />
+      }
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          colors={['#6200EE']}
+        />
+      }
+    />
+  );
   const SoldRoute = () => <View />;
   const BorrowedRoute = () => <View />;
   const LentRoute = () => <View />;
@@ -29,6 +64,15 @@ const TransactionsScreen = () => {
     borrowed: BorrowedRoute,
     lent: LentRoute,
   });
+  const { user } = useAuthStore();
+  const { purchases, myPurchases, fetchMyPurchases } = useTransactionStore();
+
+  useEffect(() => {
+    if (user?.id) fetchMyPurchases(user.id);
+  }, []);
+  useEffect(() => {
+    console.log('Updated purchases:', myPurchases);
+  }, [myPurchases]);
 
   const renderTabBar = (props: any) => (
     <TabBar
