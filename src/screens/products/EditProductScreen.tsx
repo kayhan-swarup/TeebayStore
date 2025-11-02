@@ -1,4 +1,12 @@
-import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../types';
@@ -77,6 +85,8 @@ const EditProductScreen = () => {
     await openGallery(handleImageChange);
   };
 
+  const handleSubmit = async () => {};
+
   if (isLoading && !selectedProduct) {
     return <Loading />;
   }
@@ -148,6 +158,85 @@ const EditProductScreen = () => {
                 Choose from Device
               </Button>
             </View>
+          </View>
+          {/* Pricing */}
+          <View style={styles.priceSection}>
+            <Text style={styles.sectionTitle}>Price</Text>
+
+            <View style={styles.priceRow}>
+              <View style={styles.priceColumn}>
+                <TextInput
+                  label="Purchase Price"
+                  value={purchasePrice}
+                  onChangeText={setPurchasePrice}
+                  placeholder="0"
+                  keyboardType="decimal-pad"
+                  style={styles.priceInput}
+                />
+              </View>
+
+              <View style={styles.priceColumn}>
+                <TextInput
+                  label="Rent Price"
+                  value={rentPrice}
+                  onChangeText={setRentPrice}
+                  placeholder="0"
+                  keyboardType="decimal-pad"
+                  style={styles.priceInput}
+                />
+              </View>
+            </View>
+
+            {/* Rent Option */}
+            <View style={styles.rentOptionContainer}>
+              <Text style={styles.rentOptionLabel}>Rent per:</Text>
+              <View style={styles.rentOptionButtons}>
+                <TouchableOpacity
+                  style={[
+                    styles.rentOptionButton,
+                    rentOption === 'hour' && styles.rentOptionButtonActive,
+                  ]}
+                  onPress={() => setRentOption('hour')}
+                >
+                  <Text
+                    style={[
+                      styles.rentOptionButtonText,
+                      rentOption === 'hour' &&
+                        styles.rentOptionButtonTextActive,
+                    ]}
+                  >
+                    Hour
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.rentOptionButton,
+                    rentOption === 'day' && styles.rentOptionButtonActive,
+                  ]}
+                  onPress={() => setRentOption('day')}
+                >
+                  <Text
+                    style={[
+                      styles.rentOptionButtonText,
+                      rentOption === 'day' && styles.rentOptionButtonTextActive,
+                    ]}
+                  >
+                    Day
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            {/* Submit Button */}
+            <Button
+              mode="contained"
+              onPress={handleSubmit}
+              style={styles.submitButton}
+              labelStyle={styles.submitButtonLabel}
+              loading={isLoading}
+              disabled={isLoading}
+            >
+              Edit Product
+            </Button>
           </View>
         </View>
       </View>
@@ -261,8 +350,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   submitButton: {
-    marginTop: 8,
-    marginBottom: 32,
+    marginTop: 30,
+    marginBottom: 25,
     paddingVertical: 8,
     backgroundColor: '#6200EE',
   },
