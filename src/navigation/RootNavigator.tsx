@@ -9,11 +9,16 @@ import { useAuthStore } from '../store/authStore';
 import AddProductScreen from '../screens/products/AddProductScreen';
 import ProductDetailScreen from '../screens/products/ProductDetailScreen';
 import EditProductScreen from '../screens/products/EditProductScreen';
+import { Loading } from '../components/common/Loading';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
   const { isAuthenticated, isLoading, user } = useAuthStore();
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <NavigationContainer>

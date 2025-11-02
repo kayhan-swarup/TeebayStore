@@ -5,6 +5,7 @@ import { RootStackParamList } from '../../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useProductStore } from '../../store/productStore';
 import { Category } from '../../constants';
+import { Loading } from '../../components/common/Loading';
 
 type EditProductRouteProp = RouteProp<RootStackParamList, 'EditProduct'>;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -24,6 +25,9 @@ const EditProductScreen = () => {
   const [productImage, setProductImage] = useState<any>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  if (isLoading || !selectedProduct) {
+    return <Loading />;
+  }
   return (
     <View>
       <Text>EditProductScreen</Text>
