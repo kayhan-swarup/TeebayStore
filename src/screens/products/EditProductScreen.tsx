@@ -1,4 +1,4 @@
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../types';
@@ -7,7 +7,8 @@ import { useProductStore } from '../../store/productStore';
 import { CATEGORIES, Category } from '../../constants';
 import { Loading } from '../../components/common/Loading';
 import { TextInput } from '../../components/common/TextInput';
-import { Chip } from 'react-native-paper';
+import { Button, Chip } from 'react-native-paper';
+import { openCamera, openGallery } from '../../utils/imagePicker';
 
 type EditProductRouteProp = RouteProp<RootStackParamList, 'EditProduct'>;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -61,6 +62,21 @@ const EditProductScreen = () => {
     }
   };
 
+  const handleImageChange = (image: any) => {
+    setProductImage(image);
+    if (image?.uri) {
+      setImagePreview(image.uri);
+    }
+  };
+
+  const handleCamera = async () => {
+    await openCamera(handleImageChange);
+  };
+
+  const handleGallery = async () => {
+    await openGallery(handleImageChange);
+  };
+
   if (isLoading && !selectedProduct) {
     return <Loading />;
   }
@@ -95,6 +111,43 @@ const EditProductScreen = () => {
                 {category.label}
               </Chip>
             ))}
+          </View>
+          {/* Description */}
+          <TextInput
+            label="Description"
+            value={description}
+            onChangeText={setDescription}
+            placeholder="Enter product description"
+            multiline
+            numberOfLines={6}
+          />
+          <View style={styles.section}>
+            <Text style={styles.label}>Product Image</Text>
+            {imagePreview && (
+              <Image
+                source={{ uri: imagePreview }}
+                style={styles.imagePreview}
+                resizeMode="cover"
+              />
+            )}
+            <View style={styles.imageButtons}>
+              <Button
+                mode="contained"
+                icon="camera"
+                onPress={handleCamera}
+                style={styles.imageButton}
+              >
+                Take Photo
+              </Button>
+              <Button
+                mode="outlined"
+                icon="image"
+                onPress={handleGallery}
+                style={styles.imageButton}
+              >
+                Choose from Device
+              </Button>
+            </View>
           </View>
         </View>
       </View>
