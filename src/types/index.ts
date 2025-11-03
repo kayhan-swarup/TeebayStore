@@ -24,6 +24,7 @@ export interface RegisterRequest {
   last_name: string;
   address: string;
   phone_number: string;
+  firebase_console_manager_token?: string;
 }
 
 // Product types

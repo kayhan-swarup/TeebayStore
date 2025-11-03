@@ -11,10 +11,12 @@ import React, { useState } from 'react';
 import { TextInput } from '../../components/common/TextInput';
 import { useNavigation } from '@react-navigation/native';
 import { Button } from '../../components/common/Button';
+import { RegisterRequest } from '../../types';
+import { useAuthStore } from '../../store/authStore';
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
-
+  const { register, isLoading, error, clearError } = useAuthStore();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -24,7 +26,6 @@ export default function RegisterScreen() {
     password: '',
     confirmPassword: '',
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validate = () => {
@@ -71,7 +72,28 @@ export default function RegisterScreen() {
   const handleSignInPress = () => {
     navigation.navigate('Login' as never);
   };
-  const handleRegister = async () => {};
+  const handleRegister = async () => {
+    if (!validate()) return;
+
+    clearError();
+
+    try {
+      const registerData: RegisterRequest = {
+        first_name: formData.firstName.trim(),
+        last_name: formData.lastName.trim(),
+        address: formData.address.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        phone_number: formData.phoneNumber.trim(),
+        firebase_console_manager_token: '', // Will be set later
+      };
+
+      await register(registerData);
+      // Navigation will be handled by App.tsx based on auth state
+    } catch (err) {
+      console.error('Registration failed:', err);
+    }
+  };
   const updateField = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
     if (errors[field]) {

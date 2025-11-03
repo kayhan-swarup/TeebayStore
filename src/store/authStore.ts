@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import apiClient, { storage } from '../api/client';
+import apiClient, { getErrorMessage, storage } from '../api/client';
 import { LoginRequest, RegisterRequest, User } from '../types';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -32,13 +32,38 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true, error: null });
           const { user } = await authService.login(data);
-          set({ user, isAuthenticated: true });
+          set({ user, isAuthenticated: true, isLoading: false, error: null });
+          console.log('Logged in user:', user);
         } catch (error) {
           set({ error: 'Login failed. Please try again.', isLoading: false });
+          console.error('Login error:', error);
         }
       },
 
-      register: async (data: RegisterRequest) => {},
+      register: async (data: RegisterRequest) => {
+        try {
+          set({ isLoading: true, error: null });
+
+          const { user } = await authService.register(data);
+
+          await storage.setUser(user);
+
+          set({
+            user,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+        } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          set({
+            isLoading: false,
+            error: errorMessage,
+            isAuthenticated: false,
+          });
+          throw error;
+        }
+      },
 
       logout: async () => {
         await storage.clearAll();
