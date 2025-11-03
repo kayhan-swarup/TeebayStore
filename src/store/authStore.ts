@@ -5,6 +5,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { API_ENDPOINTS } from '../constants';
 import { authService } from '../api/services/auth.service';
+import { firebaseService } from '../services/firebase.service';
 
 interface AuthState {
   user: User | null;
@@ -31,7 +32,11 @@ export const useAuthStore = create<AuthState>()(
       login: async (data: LoginRequest) => {
         try {
           set({ isLoading: true, error: null });
-          const { user } = await authService.login(data);
+          const fcmToken = await firebaseService.getFCMToken();
+          const { user } = await authService.login({
+            ...data,
+            fcm_token: fcmToken || undefined,
+          });
           set({ user, isAuthenticated: true, isLoading: false, error: null });
           console.log('Logged in user:', user);
         } catch (error) {
@@ -43,8 +48,11 @@ export const useAuthStore = create<AuthState>()(
       register: async (data: RegisterRequest) => {
         try {
           set({ isLoading: true, error: null });
-
-          const { user } = await authService.register(data);
+          const fcmToken = await firebaseService.getFCMToken();
+          const { user } = await authService.register({
+            ...data,
+            firebase_console_manager_token: fcmToken || undefined,
+          });
 
           await storage.setUser(user);
 

@@ -61,6 +61,7 @@ export default function LoginScreen() {
       console.error('Login failed:', err);
     }
   };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}

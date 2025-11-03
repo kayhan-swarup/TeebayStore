@@ -5,16 +5,44 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PaperProvider } from 'react-native-paper';
 import { lightTheme, darkTheme } from './src/theme';
 import { RootNavigator } from './src/navigation/RootNavigator';
-
+import { firebaseService } from './src/services/firebase.service';
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
   const theme = isDarkMode ? darkTheme : lightTheme;
+
+  useEffect(() => {
+    // Initialize Firebase and get FCM token on app start
+    const initializeFirebase = async () => {
+      try {
+        const token = await firebaseService.getFCMToken();
+        if (token) {
+          console.log('Firebase initialized with token:', token);
+        } else {
+          console.log('Failed to get FCM token');
+        }
+      } catch (error) {
+        console.error('Firebase initialization error:', error);
+      }
+    };
+
+    initializeFirebase();
+
+    // Listen for token refresh
+    const unsubscribe = firebaseService.onTokenRefresh(token => {
+      console.log('New FCM token received:', token);
+      // TODO: Send updated token to backend if user is logged in
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <SafeAreaProvider>

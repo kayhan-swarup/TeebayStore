@@ -74,3 +74,4 @@ class FirebaseService {
     this.fcmToken = null;
   }
 }
+export const firebaseService = new FirebaseService();
