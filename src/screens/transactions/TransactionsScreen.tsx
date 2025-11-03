@@ -22,6 +22,10 @@ const TransactionsScreen = () => {
     { key: 'borrowed', title: 'BORROW' },
     { key: 'lent', title: 'LENT' },
   ]);
+  const { user } = useAuthStore();
+  const { purchases, myPurchases, soldItems, fetchAllTransactions } =
+    useTransactionStore();
+
   const EmptyState = ({ message }: { message: string }) => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyIcon}>📦</Text>
@@ -55,7 +59,26 @@ const TransactionsScreen = () => {
       }
     />
   );
-  const SoldRoute = () => <View />;
+  const SoldRoute = () => (
+    <FlatList
+      data={soldItems}
+      renderItem={({ item }) => {
+        return <ProductCard product={item} />;
+      }}
+      keyExtractor={item => item.id.toString()}
+      contentContainerStyle={styles.emptyList}
+      ListEmptyComponent={
+        <EmptyState message="You haven't purchased any products yet" />
+      }
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          colors={['#6200EE']}
+        />
+      }
+    />
+  );
   const BorrowedRoute = () => <View />;
   const LentRoute = () => <View />;
   const renderScene = SceneMap({
@@ -64,11 +87,9 @@ const TransactionsScreen = () => {
     borrowed: BorrowedRoute,
     lent: LentRoute,
   });
-  const { user } = useAuthStore();
-  const { purchases, myPurchases, fetchMyPurchases } = useTransactionStore();
 
   useEffect(() => {
-    if (user?.id) fetchMyPurchases(user.id);
+    if (user?.id) fetchAllTransactions(user.id);
   }, []);
   useEffect(() => {
     console.log('Updated purchases:', myPurchases);

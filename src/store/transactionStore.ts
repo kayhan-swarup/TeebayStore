@@ -8,7 +8,7 @@ interface TransactionState {
   rentals: Rent[];
   myPurchases: Product[];
   myRentals: Rent[];
-  soldItems: Purchase[];
+  soldItems: Product[];
   lentItems: Rent[];
   isLoading: boolean;
   error: string | null;
@@ -21,7 +21,7 @@ interface TransactionState {
     startDate: string,
     endDate: string,
   ) => Promise<Rent>;
-  fetchMyPurchases: (userId: number) => Promise<void>;
+  fetchAllTransactions: (userId: number) => Promise<void>;
 }
 
 export const useTransactionStore = create<TransactionState>((set, get) => ({
@@ -83,13 +83,14 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
       throw error;
     }
   },
-  fetchMyPurchases: async (userId: number) => {
+  fetchAllTransactions: async (userId: number) => {
     try {
       set({ isLoading: true, error: null });
       const purchases = await transactionsService.getPurchases();
       console.log('Fetched purchases:', purchases);
       set({ purchases, isLoading: false });
       const myPurchasedProducts: Product[] = [];
+      const mySoldProducts: Product[] = [];
       for (const purchase of purchases) {
         if (purchase.buyer === userId) {
           const product = await productService.getProductById(
@@ -97,9 +98,19 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
           );
           myPurchasedProducts.push(product);
         }
+        if (purchase.seller === userId) {
+          const product = await productService.getProductById(
+            purchase.product as number,
+          );
+          mySoldProducts.push(product);
+        }
       }
-      console.log('My purchased products:', myPurchasedProducts);
-      set({ myPurchases: myPurchasedProducts, isLoading: false });
+
+      set({
+        myPurchases: myPurchasedProducts,
+        soldItems: mySoldProducts,
+        isLoading: false,
+      });
     } catch (error) {
       set({ error: getErrorMessage(error), isLoading: false });
     }
