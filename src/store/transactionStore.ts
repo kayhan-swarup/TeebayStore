@@ -7,9 +7,9 @@ interface TransactionState {
   purchases: Purchase[];
   rentals: Rent[];
   myPurchases: Product[];
-  myRentals: Rent[];
+  myRentals: Product[];
   soldItems: Product[];
-  lentItems: Rent[];
+  lentItems: Product[];
   isLoading: boolean;
   error: string | null;
 
@@ -73,7 +73,7 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
 
       // Add to myRentals
       set(state => ({
-        myRentals: [rental, ...state.myRentals],
+        rentals: [rental, ...state.rentals],
         isLoading: false,
       }));
 
@@ -87,8 +87,9 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const purchases = await transactionsService.getPurchases();
+      const rentals = await transactionsService.getRentals();
       console.log('Fetched purchases:', purchases);
-      set({ purchases, isLoading: false });
+      set({ purchases, rentals });
       const myPurchasedProducts: Product[] = [];
       const mySoldProducts: Product[] = [];
       for (const purchase of purchases) {
@@ -105,10 +106,28 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
           mySoldProducts.push(product);
         }
       }
+      const myRentedProducts: Product[] = [];
+      const myLentProducts: Product[] = [];
+      for (const rental of rentals) {
+        if (rental.renter === userId) {
+          const product = await productService.getProductById(
+            rental.product as number,
+          );
+          myRentedProducts.push(product);
+        }
+        if (rental.seller === userId) {
+          const product = await productService.getProductById(
+            rental.product as number,
+          );
+          myLentProducts.push(product);
+        }
+      }
 
       set({
         myPurchases: myPurchasedProducts,
         soldItems: mySoldProducts,
+        myRentals: myRentedProducts,
+        lentItems: myLentProducts,
         isLoading: false,
       });
     } catch (error) {

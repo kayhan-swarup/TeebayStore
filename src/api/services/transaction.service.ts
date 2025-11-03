@@ -36,4 +36,10 @@ export const transactionsService = {
     );
     return response.data;
   },
+  async getRentals(): Promise<Rent[]> {
+    const response = await apiClient.get<Rent[]>(
+      API_ENDPOINTS.TRANSACTIONS.RENTALS.LIST,
+    );
+    return response.data;
+  },
 };

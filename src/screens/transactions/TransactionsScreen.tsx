@@ -23,8 +23,14 @@ const TransactionsScreen = () => {
     { key: 'lent', title: 'LENT' },
   ]);
   const { user } = useAuthStore();
-  const { purchases, myPurchases, soldItems, fetchAllTransactions } =
-    useTransactionStore();
+  const {
+    purchases,
+    myPurchases,
+    soldItems,
+    myRentals,
+    lentItems,
+    fetchAllTransactions,
+  } = useTransactionStore();
 
   const EmptyState = ({ message }: { message: string }) => (
     <View style={styles.emptyContainer}>
@@ -68,7 +74,7 @@ const TransactionsScreen = () => {
       keyExtractor={item => item.id.toString()}
       contentContainerStyle={styles.emptyList}
       ListEmptyComponent={
-        <EmptyState message="You haven't purchased any products yet" />
+        <EmptyState message="You haven't sold any products yet" />
       }
       refreshControl={
         <RefreshControl
@@ -79,8 +85,46 @@ const TransactionsScreen = () => {
       }
     />
   );
-  const BorrowedRoute = () => <View />;
-  const LentRoute = () => <View />;
+  const BorrowedRoute = () => (
+    <FlatList
+      data={myRentals}
+      renderItem={({ item }) => {
+        return <ProductCard product={item} />;
+      }}
+      keyExtractor={item => item.id.toString()}
+      contentContainerStyle={styles.emptyList}
+      ListEmptyComponent={
+        <EmptyState message="You haven't rented any products yet" />
+      }
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          colors={['#6200EE']}
+        />
+      }
+    />
+  );
+  const LentRoute = () => (
+    <FlatList
+      data={lentItems}
+      renderItem={({ item }) => {
+        return <ProductCard product={item} />;
+      }}
+      keyExtractor={item => item.id.toString()}
+      contentContainerStyle={styles.emptyList}
+      ListEmptyComponent={
+        <EmptyState message="You haven't lent any products yet" />
+      }
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          colors={['#6200EE']}
+        />
+      }
+    />
+  );
   const renderScene = SceneMap({
     bought: BoughtRoute,
     sold: SoldRoute,
@@ -88,8 +132,12 @@ const TransactionsScreen = () => {
     lent: LentRoute,
   });
 
-  useEffect(() => {
+  const loadAllTransactions = async () => {
     if (user?.id) fetchAllTransactions(user.id);
+  };
+
+  useEffect(() => {
+    loadAllTransactions();
   }, []);
   useEffect(() => {
     console.log('Updated purchases:', myPurchases);
