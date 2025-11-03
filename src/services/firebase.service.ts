@@ -1,5 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
-import { Platform, PermissionsAndroid } from 'react-native';
+import { Platform, PermissionsAndroid, Alert } from 'react-native';
 class FirebaseService {
   private fcmToken: string | null = null;
   async requestPermission(): Promise<boolean> {
@@ -65,6 +65,47 @@ class FirebaseService {
       this.fcmToken = token;
       callback(token);
     });
+  }
+  setupForegroundHandler(onNotificationReceived?: (notification: any) => void) {
+    return messaging().onMessage(async remoteMessage => {
+      console.log('Foreground notification received:', remoteMessage);
+
+      // Show alert for foreground notifications
+      Alert.alert(
+        remoteMessage.notification?.title || 'Notification',
+        remoteMessage.notification?.body || '',
+        [
+          {
+            text: 'View',
+            onPress: () => {
+              if (onNotificationReceived && remoteMessage.data) {
+                onNotificationReceived(remoteMessage.data);
+              }
+            },
+          },
+          { text: 'Dismiss', style: 'cancel' },
+        ],
+      );
+    });
+  }
+  setupBackgroundHandler(onNotificationOpened: (notification: any) => void) {
+    return messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log('Notification opened app from background:', remoteMessage);
+      if (remoteMessage.data) {
+        onNotificationOpened(remoteMessage.data);
+      }
+    });
+  }
+  async checkInitialNotification(
+    onNotificationOpened: (notification: any) => void,
+  ) {
+    const remoteMessage = await messaging().getInitialNotification();
+    if (remoteMessage) {
+      console.log('Notification opened app from killed state:', remoteMessage);
+      if (remoteMessage.data) {
+        onNotificationOpened(remoteMessage.data);
+      }
+    }
   }
 
   /**

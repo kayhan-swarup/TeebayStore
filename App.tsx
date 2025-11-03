@@ -33,14 +33,47 @@ function App() {
 
     initializeFirebase();
 
-    // Listen for token refresh
-    const unsubscribe = firebaseService.onTokenRefresh(token => {
-      console.log('New FCM token received:', token);
-      // TODO: Send updated token to backend if user is logged in
+    // Handle notification when app opened from notification (killed state)
+    firebaseService.checkInitialNotification(data => {
+      console.log('App opened from notification (killed):', data);
+      if (data.product_id) {
+        // Navigate to product details
+        // You'll need to handle this with navigation ref
+        console.log('Navigate to product:', data.product_id);
+      }
     });
 
+    // Listen for token refresh
+    const unsubscribeTokenRefresh = firebaseService.onTokenRefresh(token => {
+      console.log('New FCM token received:', token);
+    });
+
+    // Handle foreground notifications
+    const unsubscribeForeground = firebaseService.setupForegroundHandler(
+      data => {
+        console.log('Foreground notification tapped:', data);
+        if (data.product_id) {
+          // Navigate to product
+          console.log('Navigate to product:', data.product_id);
+        }
+      },
+    );
+
+    // Handle background notification taps
+    const unsubscribeBackground = firebaseService.setupBackgroundHandler(
+      data => {
+        console.log('Background notification tapped:', data);
+        if (data.product_id) {
+          // Navigate to product
+          console.log('Navigate to product:', data.product_id);
+        }
+      },
+    );
+
     return () => {
-      unsubscribe();
+      unsubscribeTokenRefresh();
+      unsubscribeForeground();
+      unsubscribeBackground();
     };
   }, []);
 
