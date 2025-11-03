@@ -14,7 +14,7 @@ export interface User {
 export interface LoginRequest {
   email: string;
   password: string;
-  firebase_console_manager_token?: string;
+  fcm_token?: string;
 }
 
 export interface RegisterRequest {

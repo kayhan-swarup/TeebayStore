@@ -1,4 +1,4 @@
-package com.teebay
+package com.teebay.appname
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
