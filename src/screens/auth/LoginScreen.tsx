@@ -13,6 +13,7 @@ import { TextInput } from '../../components/common/TextInput';
 import { Button } from '../../components/common/Button';
 import { useAuthStore } from '../../store/authStore';
 import { ErrorMessage } from '../../components/common/ErrorMessage';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -109,14 +110,24 @@ export default function LoginScreen() {
           />
 
           {/* Login Button */}
-          <Button
-            onPress={handleLogin}
-            loading={isLoading}
-            disabled={isLoading}
-            style={styles.loginButton}
-          >
-            LOGIN
-          </Button>
+          <View style={styles.buttonContainer}>
+            <Button
+              onPress={handleLogin}
+              loading={isLoading}
+              disabled={isLoading}
+              style={styles.loginButton}
+            >
+              LOGIN
+            </Button>
+            <TouchableOpacity
+              style={styles.biometricButton}
+              onPress={() => {
+                console.log('Biometric login pressed');
+              }}
+            >
+              <Icon name="fingerprint" size={28} color="#6200EE" />
+            </TouchableOpacity>
+          </View>
 
           {/* Signup Link */}
           <View style={styles.signupContainer}>
@@ -153,6 +164,7 @@ const styles = StyleSheet.create({
   loginButton: {
     marginTop: 8,
     marginBottom: 24,
+    flex: 1,
   },
   signupContainer: {
     flexDirection: 'row',
@@ -167,5 +179,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6200EE',
     fontWeight: '600',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 8,
+    marginBottom: 24,
+  },
+  biometricButton: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+    backgroundColor: '#F5F5F5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#6200EE',
+    marginTop: 8,
+    marginBottom: 24,
   },
 });
