@@ -34,14 +34,7 @@ function App() {
     initializeFirebase();
 
     // Handle notification when app opened from notification (killed state)
-    firebaseService.checkInitialNotification(data => {
-      console.log('App opened from notification (killed):', data);
-      if (data.product_id) {
-        // Navigate to product details
-        // You'll need to handle this with navigation ref
-        console.log('Navigate to product:', data.product_id);
-      }
-    });
+    firebaseService.checkInitialNotification();
 
     // Listen for token refresh
     const unsubscribeTokenRefresh = firebaseService.onTokenRefresh(token => {
@@ -49,26 +42,10 @@ function App() {
     });
 
     // Handle foreground notifications
-    const unsubscribeForeground = firebaseService.setupForegroundHandler(
-      data => {
-        console.log('Foreground notification tapped:', data);
-        if (data.product_id) {
-          // Navigate to product
-          console.log('Navigate to product:', data.product_id);
-        }
-      },
-    );
+    const unsubscribeForeground = firebaseService.setupForegroundHandler();
 
     // Handle background notification taps
-    const unsubscribeBackground = firebaseService.setupBackgroundHandler(
-      data => {
-        console.log('Background notification tapped:', data);
-        if (data.product_id) {
-          // Navigate to product
-          console.log('Navigate to product:', data.product_id);
-        }
-      },
-    );
+    const unsubscribeBackground = firebaseService.setupBackgroundHandler();
 
     return () => {
       unsubscribeTokenRefresh();

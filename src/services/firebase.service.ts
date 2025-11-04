@@ -1,5 +1,6 @@
 import messaging from '@react-native-firebase/messaging';
 import { Platform, PermissionsAndroid, Alert } from 'react-native';
+import { navigateToProductDetail } from '../navigation/navigationRef';
 class FirebaseService {
   private fcmToken: string | null = null;
   async requestPermission(): Promise<boolean> {
@@ -66,10 +67,10 @@ class FirebaseService {
       callback(token);
     });
   }
-  setupForegroundHandler(onNotificationReceived?: (notification: any) => void) {
+  setupForegroundHandler() {
     return messaging().onMessage(async remoteMessage => {
       console.log('Foreground notification received:', remoteMessage);
-
+      const productId = remoteMessage.data?.product_id;
       // Show alert for foreground notifications
       Alert.alert(
         remoteMessage.notification?.title || 'Notification',
@@ -78,8 +79,8 @@ class FirebaseService {
           {
             text: 'View',
             onPress: () => {
-              if (onNotificationReceived && remoteMessage.data) {
-                onNotificationReceived(remoteMessage.data);
+              if (productId) {
+                navigateToProductDetail(Number(productId));
               }
             },
           },
@@ -88,22 +89,24 @@ class FirebaseService {
       );
     });
   }
-  setupBackgroundHandler(onNotificationOpened: (notification: any) => void) {
+  setupBackgroundHandler() {
     return messaging().onNotificationOpenedApp(remoteMessage => {
       console.log('Notification opened app from background:', remoteMessage);
-      if (remoteMessage.data) {
-        onNotificationOpened(remoteMessage.data);
+      const productId = remoteMessage.data?.product_id;
+      if (productId) {
+        navigateToProductDetail(Number(productId));
       }
     });
   }
-  async checkInitialNotification(
-    onNotificationOpened: (notification: any) => void,
-  ) {
+  async checkInitialNotification() {
     const remoteMessage = await messaging().getInitialNotification();
     if (remoteMessage) {
       console.log('Notification opened app from killed state:', remoteMessage);
-      if (remoteMessage.data) {
-        onNotificationOpened(remoteMessage.data);
+      const productId = remoteMessage.data?.product_id;
+      if (productId) {
+        setTimeout(() => {
+          navigateToProductDetail(Number(productId));
+        }, 1000);
       }
     }
   }
