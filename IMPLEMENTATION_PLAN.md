@@ -1,6 +1,7 @@
 # Teebay Mobile App - Implementation Plan
 
 ## 📋 Overview
+
 This document outlines the complete implementation strategy for the Teebay marketplace mobile application, covering all 4 parts of the requirements.
 
 ---
@@ -8,12 +9,14 @@ This document outlines the complete implementation strategy for the Teebay marke
 ## 🎯 Core Requirements Summary
 
 ### Part 1: Authentication (Biometric Focus)
+
 - User Registration
 - Login with Biometric/FaceID authentication
 - Traditional login fallback
 - Simple string matching (no encryption)
 
 ### Part 2: Product Management (Multi-page Form)
+
 - Add Product (multi-page form with back/forth navigation)
 - Edit Product
 - Delete Product
@@ -21,6 +24,7 @@ This document outlines the complete implementation strategy for the Teebay marke
 - Support for purchase and/or rent pricing
 
 ### Part 3: Marketplace & Transactions
+
 - Browse all products (optimized for large datasets)
 - Buy products
 - Rent products (with date range)
@@ -29,6 +33,7 @@ This document outlines the complete implementation strategy for the Teebay marke
 - Deep linking to products
 
 ### Part 4: Documentation
+
 - Technical documentation (Part_4_documentation.md)
 - Architecture decisions
 - Corner cases and solutions
@@ -38,6 +43,7 @@ This document outlines the complete implementation strategy for the Teebay marke
 ## 🏗️ Architecture & Tech Stack
 
 ### Dependencies to Install
+
 ```json
 {
   "core": [
@@ -47,23 +53,10 @@ This document outlines the complete implementation strategy for the Teebay marke
     "react-native-screens",
     "react-native-safe-area-context"
   ],
-  "state": [
-    "@react-redux/toolkit",
-    "react-redux",
-    "@reduxjs/toolkit"
-  ],
-  "api": [
-    "axios",
-    "@react-native-async-storage/async-storage"
-  ],
-  "forms": [
-    "react-hook-form",
-    "yup",
-    "@hookform/resolvers"
-  ],
-  "biometric": [
-    "react-native-biometrics"
-  ],
+  "state": ["@react-redux/toolkit", "react-redux", "@reduxjs/toolkit"],
+  "api": ["axios", "@react-native-async-storage/async-storage"],
+  "forms": ["react-hook-form", "yup", "@hookform/resolvers"],
+  "biometric": ["react-native-biometrics"],
   "firebase": [
     "@react-native-firebase/app",
     "@react-native-firebase/messaging"
@@ -73,16 +66,9 @@ This document outlines the complete implementation strategy for the Teebay marke
     "react-native-modal",
     "react-native-paper"
   ],
-  "performance": [
-    "react-native-fast-image"
-  ],
-  "date": [
-    "react-native-calendars",
-    "date-fns"
-  ],
-  "image": [
-    "react-native-image-picker"
-  ]
+  "performance": ["react-native-fast-image"],
+  "date": ["react-native-calendars", "date-fns"],
+  "image": ["react-native-image-picker"]
 }
 ```
 
@@ -200,24 +186,28 @@ Teebay/
 ## 📝 Implementation Order & Tasks
 
 ### Phase 1: Foundation Setup
+
 **Priority: Critical | Estimated Time: 2-3 hours**
 
 1. **Install Dependencies**
+
    - Install all required npm packages
    - Link native modules
    - Configure Android for FCM
 
 2. **Constants & Configuration**
+
    - API endpoints and base URL
    - App constants (colors, validation rules)
    - Category and rent option definitions
 
 3. **API Service Layer**
+
    - Axios instance with interceptors
    - Storage service (AsyncStorage wrapper)
    - Error handling utilities
 
-4. **Type Definitions** ✓ (Already done)
+4. **Type Definitions** ✓
    - User, Product, Transaction types
    - Navigation types
    - API response types
@@ -225,21 +215,25 @@ Teebay/
 ---
 
 ### Phase 2: Authentication (PART 1)
+
 **Priority: High | Estimated Time: 4-5 hours**
 
 #### 2.1 Basic Auth Setup
+
 - [ ] Create AuthContext with state management
 - [ ] Implement storage service for tokens
 - [ ] Build auth API service (login, register)
 - [ ] Create useAuth custom hook
 
 #### 2.2 UI Components
+
 - [ ] Build reusable Input, Button components
 - [ ] Create LoginScreen with form validation
 - [ ] Create RegisterScreen with multi-field form
 - [ ] Add error handling and loading states
 
 #### 2.3 Biometric Authentication
+
 - [ ] Set up react-native-biometrics
 - [ ] Create biometric service wrapper
 - [ ] Implement useBiometric hook
@@ -249,11 +243,13 @@ Teebay/
 - [ ] Handle biometric failures gracefully
 
 #### 2.4 Navigation Setup
+
 - [ ] Configure AuthNavigator (Login, Register)
 - [ ] Set up navigation guards
 - [ ] Implement auto-login with stored credentials
 
 **Testing Checklist:**
+
 - [ ] Register new user successfully
 - [ ] Login with email/password
 - [ ] Login with biometric (after enabling)
@@ -264,14 +260,17 @@ Teebay/
 ---
 
 ### Phase 3: Product Management (PART 2)
+
 **Priority: High | Estimated Time: 6-8 hours**
 
 #### 3.1 Product API Integration
+
 - [ ] Create product service (CRUD operations)
 - [ ] Implement useProducts hook
 - [ ] Add image upload handling
 
 #### 3.2 Multi-Step Form Architecture
+
 - [ ] Design form state management (useReducer or Context)
 - [ ] Create FormNavigation component (Back/Next buttons)
 - [ ] Implement progress indicator
@@ -279,6 +278,7 @@ Teebay/
 - [ ] Preserve state on navigation
 
 #### 3.3 Product Form Steps
+
 - [ ] **Step 1**: Title & Description
   - Text inputs with validation
   - Character count
@@ -300,6 +300,7 @@ Teebay/
   - Submit to API
 
 #### 3.4 Product Listing & Management
+
 - [ ] Create MyProductsScreen
 - [ ] Build ProductCard component
 - [ ] Implement EditProductScreen (reuse form steps)
@@ -307,12 +308,14 @@ Teebay/
 - [ ] Handle empty state (no products)
 
 **Key Considerations:**
+
 - Form state persists when going back
 - Validation prevents proceeding to next step
 - Edit mode pre-fills form with existing data
 - Delete removes product and associated transactions
 
 **Testing Checklist:**
+
 - [ ] Complete full form flow (forward)
 - [ ] Navigate backwards and edit
 - [ ] Submit with valid data
@@ -323,9 +326,11 @@ Teebay/
 ---
 
 ### Phase 4: Marketplace & Transactions (PART 3)
+
 **Priority: Critical | Estimated Time: 8-10 hours**
 
 #### 4.1 Browse Products
+
 - [ ] Create BrowseScreen with optimized FlatList
 - [ ] Implement pagination/infinite scroll
 - [ ] Add pull-to-refresh
@@ -333,6 +338,7 @@ Teebay/
 - [ ] Handle empty state
 
 **Performance Optimizations:**
+
 - Use `getItemLayout` for fixed heights
 - Implement `windowSize` optimization
 - Memoize ProductCard with React.memo
@@ -340,6 +346,7 @@ Teebay/
 - Debounce search/filter inputs
 
 #### 4.2 Product Details & Actions
+
 - [ ] Create ProductDetailsScreen
 - [ ] Show product info, seller details
 - [ ] Add "Buy" button (if purchase available)
@@ -347,6 +354,7 @@ Teebay/
 - [ ] Disable actions for own products
 
 #### 4.3 Buy Flow
+
 - [ ] Create BuyConfirmScreen
 - [ ] Show purchase summary
 - [ ] Implement purchase API call
@@ -354,6 +362,7 @@ Teebay/
 - [ ] Navigate to transactions
 
 #### 4.4 Rent Flow
+
 - [ ] Create RentConfirmScreen
 - [ ] Implement DateRangePicker component
 - [ ] Validate date range (from < to)
@@ -363,6 +372,7 @@ Teebay/
 - [ ] Show success message
 
 **Rent Overlap Logic:**
+
 ```
 Check if product has existing rentals that overlap with selected dates:
 - Query rentals for product
@@ -372,6 +382,7 @@ Check if product has existing rentals that overlap with selected dates:
 ```
 
 #### 4.5 Transactions View
+
 - [ ] Create TransactionsScreen with tabs/sections:
   - Bought (purchases by user)
   - Sold (products sold by user)
@@ -382,6 +393,7 @@ Check if product has existing rentals that overlap with selected dates:
 - [ ] Add filters and sorting
 
 **Testing Checklist:**
+
 - [ ] Browse products loads efficiently (test with 100+ products)
 - [ ] Pagination works smoothly
 - [ ] Buy product successfully
@@ -393,15 +405,18 @@ Check if product has existing rentals that overlap with selected dates:
 ---
 
 ### Phase 5: Push Notifications (PART 3 - FCM)
+
 **Priority: High | Estimated Time: 4-5 hours**
 
 #### 5.1 Firebase Setup
+
 - [ ] Add google-services.json to android/app/
 - [ ] Configure AndroidManifest.xml
 - [ ] Update build.gradle files
 - [ ] Install @react-native-firebase packages
 
 #### 5.2 FCM Integration
+
 - [ ] Initialize Firebase in App.tsx
 - [ ] Request notification permissions
 - [ ] Get FCM token on app start
@@ -409,6 +424,7 @@ Check if product has existing rentals that overlap with selected dates:
 - [ ] Store token in AsyncStorage
 
 #### 5.3 Notification Handling
+
 - [ ] Handle foreground notifications
 - [ ] Handle background notifications
 - [ ] Handle app killed state notifications
@@ -416,12 +432,14 @@ Check if product has existing rentals that overlap with selected dates:
 - [ ] Implement notification service
 
 #### 5.4 Deep Linking
+
 - [ ] Configure linking in navigation
 - [ ] Create deep link handler
 - [ ] Navigate to ProductDetailsScreen on notification click
 - [ ] Handle invalid product_id gracefully
 
 **Notification Flow:**
+
 ```
 1. User B rents/buys from User A
 2. Backend sends FCM to User A's token
@@ -431,6 +449,7 @@ Check if product has existing rentals that overlap with selected dates:
 ```
 
 **Testing Checklist:**
+
 - [ ] Receive notification when product sold
 - [ ] Receive notification when product rented
 - [ ] Click notification navigates to product
@@ -441,6 +460,7 @@ Check if product has existing rentals that overlap with selected dates:
 ---
 
 ### Phase 6: UI/UX Polish
+
 **Priority: Medium | Estimated Time: 3-4 hours**
 
 - [ ] Add loading states everywhere
@@ -457,20 +477,24 @@ Check if product has existing rentals that overlap with selected dates:
 ---
 
 ### Phase 7: Testing & Quality
+
 **Priority: High | Estimated Time: 4-5 hours**
 
 #### 7.1 Unit Tests
+
 - [ ] Test utility functions
 - [ ] Test validation logic
 - [ ] Test API services (mocked)
 - [ ] Test custom hooks
 
 #### 7.2 Integration Tests
+
 - [ ] Test complete flows (register → login)
 - [ ] Test product creation flow
 - [ ] Test buy/rent flows
 
 #### 7.3 Manual Testing
+
 - [ ] Test with 100+ products (use backend script)
 - [ ] Test on Android device
 - [ ] Test biometric on real device
@@ -481,27 +505,33 @@ Check if product has existing rentals that overlap with selected dates:
 ---
 
 ### Phase 8: Documentation (PART 4)
+
 **Priority: Critical | Estimated Time: 2-3 hours**
 
 Create `Part_4_documentation.md` covering:
 
 #### Structure:
+
 1. **Architecture Overview**
+
    - Tech stack choices
    - Folder structure rationale
    - Navigation architecture
 
 2. **Part 1: Authentication Solution**
+
    - Biometric implementation approach
    - Storage strategy
    - Fallback mechanisms
 
 3. **Part 2: Multi-Step Form Solution**
+
    - State management approach
    - Validation strategy
    - Back/forth navigation handling
 
 4. **Part 3: Marketplace & Performance**
+
    - Large dataset optimization techniques
    - Transaction flow design
    - Rent overlap prevention logic
@@ -509,6 +539,7 @@ Create `Part_4_documentation.md` covering:
    - Deep linking implementation
 
 5. **Corner Cases & Solutions**
+
    - Rent date overlap
    - Network failures
    - Image upload failures
@@ -518,6 +549,7 @@ Create `Part_4_documentation.md` covering:
    - Token expiration
 
 6. **Testing Strategy**
+
    - Unit test approach
    - Integration test coverage
    - Performance testing methodology
@@ -534,6 +566,7 @@ Create `Part_4_documentation.md` covering:
 ## 🎨 Component Reusability Strategy
 
 ### Reusable Components Priority:
+
 1. **Button** - Used everywhere (forms, cards, modals)
 2. **Input** - Forms (login, register, product steps)
 3. **Card** - Product cards, transaction cards
@@ -543,6 +576,7 @@ Create `Part_4_documentation.md` covering:
 7. **Modal** - Confirmations, errors
 
 ### Compound Components:
+
 - **ProductCard** - Reused in Browse, MyProducts, Transactions
 - **TransactionCard** - Reused in all transaction tabs
 - **FormNavigation** - Reused across all product form steps
@@ -552,44 +586,53 @@ Create `Part_4_documentation.md` covering:
 ## 🔍 Corner Cases to Handle
 
 1. **Rent Overlap**
+
    - Check existing rentals before confirming
    - Show conflicting dates to user
 
 2. **Product Deletion**
+
    - Confirm before delete
    - Backend cascade deletes transactions
 
 3. **Network Errors**
+
    - Retry mechanism
    - Offline indicator
    - Cached data display
 
 4. **Biometric Failures**
+
    - Too many attempts
    - Hardware unavailable
    - Fallback to password
 
 5. **Image Upload**
+
    - Size validation
    - Format validation
    - Upload progress indicator
 
 6. **FCM Token**
+
    - Token refresh handling
    - Send updated token to backend
    - Handle token retrieval failures
 
 7. **Deep Linking**
+
    - Invalid product_id
    - Product deleted
    - User not logged in
 
 8. **Form State**
+
    - Unsaved changes warning
    - State persistence on app background
    - Clear state after submission
 
 9. **Date Validation**
+
    - Rent from date must be future
    - Rent to date must be after from date
    - Maximum rent duration
@@ -604,6 +647,7 @@ Create `Part_4_documentation.md` covering:
 ## 📊 Performance Benchmarks
 
 ### Targets:
+
 - **Product List Rendering**: < 16ms per frame (60fps)
 - **API Response Handling**: < 500ms
 - **Image Loading**: Progressive/lazy loading
@@ -611,6 +655,7 @@ Create `Part_4_documentation.md` covering:
 - **App Launch**: < 3 seconds to interactive
 
 ### Optimization Techniques:
+
 1. FlatList optimization (windowSize, getItemLayout)
 2. Image caching and optimization
 3. Component memoization
@@ -624,12 +669,14 @@ Create `Part_4_documentation.md` covering:
 ## 🚀 Development Workflow
 
 ### Commit Strategy:
+
 - Feature branches for each part
 - Meaningful commit messages
 - Small, focused commits
 - Regular pushes to show progress
 
 ### Example Commits:
+
 ```
 feat: add biometric authentication
 feat: implement multi-step product form
@@ -645,6 +692,7 @@ test: add unit tests for validation utils
 ## 📱 Demo Video Checklist
 
 Record Loom video demonstrating:
+
 1. User registration
 2. Biometric login
 3. Creating product (full multi-step form)
@@ -662,6 +710,7 @@ Record Loom video demonstrating:
 ## 🎯 Success Criteria
 
 ### Functional:
+
 - ✅ All 3 parts implemented
 - ✅ Biometric authentication working
 - ✅ Multi-step form with navigation
@@ -670,6 +719,7 @@ Record Loom video demonstrating:
 - ✅ Large dataset performance optimized
 
 ### Code Quality:
+
 - ✅ Reusable components throughout
 - ✅ TypeScript types for all data
 - ✅ Error handling everywhere
@@ -678,6 +728,7 @@ Record Loom video demonstrating:
 - ✅ No code duplication
 
 ### Documentation:
+
 - ✅ README with setup instructions
 - ✅ Part_4_documentation.md complete
 - ✅ Code comments where needed
@@ -688,6 +739,7 @@ Record Loom video demonstrating:
 ## ⏱️ Total Estimated Time: 35-45 hours
 
 **Breakdown:**
+
 - Phase 1: 2-3 hours
 - Phase 2: 4-5 hours
 - Phase 3: 6-8 hours
