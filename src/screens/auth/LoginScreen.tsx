@@ -6,14 +6,17 @@ import {
   Platform,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { TextInput } from '../../components/common/TextInput';
 import { Button } from '../../components/common/Button';
 import { useAuthStore } from '../../store/authStore';
 import { ErrorMessage } from '../../components/common/ErrorMessage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { biometricService } from '../../services/biometric.service';
+import { ActivityIndicator } from 'react-native-paper';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -23,7 +26,51 @@ export default function LoginScreen() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
+  const [showBiometric, setShowBiometric] = useState(false);
+  const [biometricLoading, setBiometricLoading] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
+
+  const checkBiometricAvailability = async () => {
+    const available = await biometricService.isBiometricAvailable();
+    const enabled = await biometricService.isBiometricEnabled();
+    setShowBiometric(available && enabled);
+  };
+
+  useEffect(() => {
+    checkBiometricAvailability();
+  }, []);
+
+  const handleBiometricLogin = async () => {
+    setBiometricLoading(true);
+    try {
+      const authenticated = await biometricService.authenticate(
+        'Login to Teebay',
+      );
+
+      if (!authenticated) {
+        setBiometricLoading(false);
+        return;
+      }
+
+      const credentials = await biometricService.getCredentials();
+
+      if (!credentials) {
+        Alert.alert('Error', 'Biometric credentials not found');
+        setBiometricLoading(false);
+        return;
+      }
+
+      await login({
+        email: credentials.email,
+        password: credentials.password,
+      });
+    } catch (error) {
+      console.error('Biometric login failed:', error);
+      Alert.alert('Error', 'Biometric login failed');
+    } finally {
+      setBiometricLoading(false);
+    }
+  };
 
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -56,7 +103,37 @@ export default function LoginScreen() {
         email: email.trim(),
         password,
       });
-      // Navigation will be handled by App.tsx based on auth state
+      const available = await biometricService.isBiometricAvailable();
+      const enabled = await biometricService.isBiometricEnabled();
+
+      if (available && !enabled) {
+        Alert.alert(
+          'Enable Biometric Login?',
+          'Use fingerprint or face recognition for faster login',
+          [
+            {
+              text: 'Not Now',
+              style: 'cancel',
+            },
+            {
+              text: 'Enable',
+              onPress: async () => {
+                const authenticated = await biometricService.authenticate(
+                  'Confirm to enable biometric login',
+                );
+                if (authenticated) {
+                  await biometricService.saveCredentials(
+                    email.trim(),
+                    password,
+                  );
+                  setShowBiometric(true);
+                  Alert.alert('Success', 'Biometric login enabled!');
+                }
+              },
+            },
+          ],
+        );
+      }
     } catch (err) {
       // Error is handled by store
       console.error('Login failed:', err);
@@ -119,14 +196,19 @@ export default function LoginScreen() {
             >
               LOGIN
             </Button>
-            <TouchableOpacity
-              style={styles.biometricButton}
-              onPress={() => {
-                console.log('Biometric login pressed');
-              }}
-            >
-              <Icon name="fingerprint" size={28} color="#6200EE" />
-            </TouchableOpacity>
+            {showBiometric && (
+              <TouchableOpacity
+                onPress={handleBiometricLogin}
+                disabled={isLoading || biometricLoading}
+                style={styles.biometricButton}
+              >
+                {biometricLoading ? (
+                  <ActivityIndicator color="#6200EE" />
+                ) : (
+                  <Icon name="fingerprint" size={32} color="#6200EE" />
+                )}
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Signup Link */}
