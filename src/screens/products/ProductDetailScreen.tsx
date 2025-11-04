@@ -277,6 +277,7 @@ const styles = StyleSheet.create({
   },
   rentButton: {
     backgroundColor: '#03DAC6',
+    marginTop: 4,
   },
   buttonLabel: {
     fontSize: 16,
