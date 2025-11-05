@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
 import { Product } from '../../types';
 import { Card, Chip } from 'react-native-paper';
@@ -66,6 +66,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </Chip>
             ))}
           </View>
+          {product.product_image && (
+            <Image
+              source={{ uri: product.product_image }}
+              style={styles.productImage}
+              resizeMode="cover"
+            />
+          )}
 
           {/* Prices */}
           <View style={styles.priceContainer}>
@@ -162,5 +169,12 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 12,
     color: '#666666',
+  },
+  productImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 12,
+    backgroundColor: '#F0F0F0',
   },
 });
