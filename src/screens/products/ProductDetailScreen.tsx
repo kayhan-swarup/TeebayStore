@@ -19,10 +19,13 @@ const ProductDetailScreen = () => {
   const route = useRoute<ProductDetailRouteProp>();
   const navigation = useNavigation<NavigationProp>();
   const { isLoading, selectedProduct, fetchProductById } = useProductStore();
+  const [sold, setSold] = useState(false);
   const {
     isLoading: transactionLoading,
     createPurchase,
     createRental,
+    getPurchaseByProductId,
+    selectedPurchase,
   } = useTransactionStore();
   const { user } = useAuthStore();
   const [showBuyDialog, setShowBuyDialog] = useState(false);
@@ -39,6 +42,13 @@ const ProductDetailScreen = () => {
     });
   };
   const handleBuy = () => {
+    if (sold) {
+      Alert.alert(
+        'Info',
+        'This product has already been sold or out of stock.',
+      );
+      return;
+    }
     setShowBuyDialog(true);
   };
   const handleRent = () => {
@@ -47,7 +57,15 @@ const ProductDetailScreen = () => {
 
   useEffect(() => {
     fetchProductById(productId);
+    getPurchaseByProductId(productId);
   }, [productId]);
+  useEffect(() => {
+    console.log('Selected Purchase:', selectedPurchase);
+    setSold(selectedPurchase !== null);
+  }, [selectedPurchase]);
+  useEffect(() => {
+    console.log('Sold status updated:', sold);
+  }, [sold]);
 
   const handleBuyConfirm = async () => {
     if (!selectedProduct || !user) return;
@@ -164,27 +182,31 @@ const ProductDetailScreen = () => {
       </Card>
 
       {/* Action Buttons */}
-      <View style={styles.actionButtons}>
-        <Button
-          mode="contained"
-          onPress={handleBuy}
-          style={[styles.button, styles.buyButton]}
-          labelStyle={styles.buttonLabel}
-          icon="shopping"
-        >
-          Buy Product
-        </Button>
+      {user?.id !== selectedProduct?.seller ? (
+        <View style={styles.actionButtons}>
+          <Button
+            mode="contained"
+            onPress={handleBuy}
+            style={[styles.button, styles.buyButton]}
+            labelStyle={styles.buttonLabel}
+            icon="shopping"
+          >
+            Buy Product
+          </Button>
 
-        <Button
-          mode="contained"
-          onPress={handleRent}
-          style={[styles.button, styles.rentButton]}
-          labelStyle={styles.buttonLabel}
-          icon="calendar"
-        >
-          Rent Product
-        </Button>
-      </View>
+          <Button
+            mode="contained"
+            onPress={handleRent}
+            style={[styles.button, styles.rentButton]}
+            labelStyle={styles.buttonLabel}
+            icon="calendar"
+          >
+            Rent Product
+          </Button>
+        </View>
+      ) : (
+        <Text style={styles.views}>This is your product listing.</Text>
+      )}
       <BuyConfirmDialog
         visible={showBuyDialog}
         onDismiss={() => setShowBuyDialog(false)}

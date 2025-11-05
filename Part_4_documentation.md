@@ -1,4 +1,4 @@
-# Part 4: Technical Implementation Documentation
+# Technical Implementation Documentation
 
 ## Project Overview
 
@@ -210,3 +210,9 @@ const lentItems = rentals.filter(r => r.seller === user.id);
 - Sends FCM token to server from login and signup
 - Handles incoming cloud messaging from background and foreground when product purchased or rented
 - Extract productId from fcm and navigates to Product Details with param
+
+## Part 4: Limitations
+
+#### Product status
+
+- Product should have status `PURCHASED`, `NOT_PURCHASED` so that already sold product don't show up in All Product List

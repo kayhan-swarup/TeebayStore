@@ -12,6 +12,7 @@ interface TransactionState {
   lentItems: Product[];
   isLoading: boolean;
   error: string | null;
+  selectedPurchase: Purchase | null;
 
   createPurchase: (buyerId: number, productId: number) => Promise<Purchase>;
   createRental: (
@@ -22,6 +23,7 @@ interface TransactionState {
     endDate: string,
   ) => Promise<Rent>;
   fetchAllTransactions: (userId: number) => Promise<void>;
+  getPurchaseByProductId: (productId: number) => Promise<void>;
 }
 
 export const useTransactionStore = create<TransactionState>((set, get) => ({
@@ -33,6 +35,7 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
   lentItems: [],
   isLoading: false,
   error: null,
+  selectedPurchase: null,
 
   createPurchase: async (buyerId: number, productId: number) => {
     try {
@@ -132,6 +135,20 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
       });
     } catch (error) {
       set({ error: getErrorMessage(error), isLoading: false });
+    }
+  },
+  getPurchaseByProductId: async (productId: number) => {
+    try {
+      set({ isLoading: true, error: null });
+      const purchases = await transactionsService.getPurchases();
+      const purchase = purchases.find(p => p.product === productId) || null;
+      set({ isLoading: false, selectedPurchase: purchase });
+    } catch (error) {
+      set({
+        error: getErrorMessage(error),
+        isLoading: false,
+        selectedPurchase: null,
+      });
     }
   },
 }));
