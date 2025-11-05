@@ -11,6 +11,7 @@ import ProductDetailScreen from '../screens/products/ProductDetailScreen';
 import EditProductScreen from '../screens/products/EditProductScreen';
 import { Loading } from '../components/common/Loading';
 import { navigationRef } from './navigationRef';
+import { COLORS } from '../constants';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -33,7 +34,7 @@ export const RootNavigator = () => {
               headerShown: true,
               presentation: 'modal',
               headerStyle: {
-                backgroundColor: '#6200EE',
+                backgroundColor: COLORS.primary,
               },
               headerTintColor: '#FFFFFF',
               headerTitleStyle: {
@@ -48,7 +49,7 @@ export const RootNavigator = () => {
             options={{
               headerShown: true,
               headerStyle: {
-                backgroundColor: '#6200EE',
+                backgroundColor: COLORS.primary,
               },
               headerTintColor: '#FFFFFF',
               headerTitleStyle: {
@@ -63,7 +64,7 @@ export const RootNavigator = () => {
             options={{
               headerShown: true,
               headerStyle: {
-                backgroundColor: '#6200EE',
+                backgroundColor: COLORS.primary,
               },
               headerTintColor: '#FFFFFF',
               headerTitleStyle: {
