@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Product, RootStackParamList } from '../../types';
-import { COLORS, DUMMY_PRODUCT, DUMMY_PRODUCTS } from '../../constants';
+import { DUMMY_PRODUCT, DUMMY_PRODUCTS } from '../../constants';
 import ProductCard from '../../components/products/ProductCard';
 import { useProductStore } from '../../store/productStore';
 
@@ -58,7 +58,7 @@ export default function AllProductsScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            colors={[COLORS.primary]}
+            colors={['#6200EE']}
           />
         }
       />
