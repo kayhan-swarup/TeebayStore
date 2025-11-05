@@ -4,6 +4,7 @@ import { Text } from 'react-native-paper';
 import { useAuthStore } from '../../store/authStore';
 import { Button } from '../../components/common/Button';
 import { biometricService } from '../../services/biometric.service';
+import { firebaseService } from '../../services/firebase.service';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuthStore();
@@ -22,6 +23,7 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     await logout();
+    firebaseService.clearToken();
   };
 
   return (

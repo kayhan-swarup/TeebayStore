@@ -175,12 +175,12 @@ export default function AddProductScreen() {
       case 5:
         if (
           !formData.purchase_price ||
-          parseFloat(formData.purchase_price) <= 0
+          parseFloat(formData.purchase_price) < 0
         ) {
           Alert.alert('Error', 'Please enter a valid purchase price');
           return false;
         }
-        if (!formData.rent_price || parseFloat(formData.rent_price) <= 0) {
+        if (!formData.rent_price || parseFloat(formData.rent_price) < 0) {
           Alert.alert('Error', 'Please enter a valid rent price');
           return false;
         }

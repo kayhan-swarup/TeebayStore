@@ -30,7 +30,7 @@
 
 ```typescript
 // Core methods:
--isBiometricAvailable() - // Check device capability
+isBiometricAvailable() - // Check device capability
   authenticate() - // Show biometric prompt
   saveCredentials() - // Store encrypted email/password
   getCredentials() - // Retrieve and decrypt credentials

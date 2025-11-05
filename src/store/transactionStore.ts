@@ -95,34 +95,48 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
       set({ purchases, rentals });
       const myPurchasedProducts: Product[] = [];
       const mySoldProducts: Product[] = [];
+      const seenPurchaseIds = new Set<number>();
+      const seenSoldIds = new Set<number>();
       for (const purchase of purchases) {
+        console.log('purchase:', purchase);
         if (purchase.buyer === userId) {
-          const product = await productService.getProductById(
-            purchase.product as number,
-          );
-          myPurchasedProducts.push(product);
+          const productId = purchase.product as number;
+          if (!seenPurchaseIds.has(productId)) {
+            const product = await productService.getProductById(productId);
+            myPurchasedProducts.push(product);
+            seenPurchaseIds.add(productId);
+          }
         }
         if (purchase.seller === userId) {
-          const product = await productService.getProductById(
-            purchase.product as number,
-          );
-          mySoldProducts.push(product);
+          const productId = purchase.product as number;
+          if (!seenSoldIds.has(productId)) {
+            const product = await productService.getProductById(productId);
+            mySoldProducts.push(product);
+            seenSoldIds.add(productId);
+          }
         }
       }
+      const seenRentedIds = new Set<number>();
+      const seenLentIds = new Set<number>();
+
       const myRentedProducts: Product[] = [];
       const myLentProducts: Product[] = [];
       for (const rental of rentals) {
         if (rental.renter === userId) {
-          const product = await productService.getProductById(
-            rental.product as number,
-          );
-          myRentedProducts.push(product);
+          const productId = rental.product as number;
+          if (!seenRentedIds.has(productId)) {
+            const product = await productService.getProductById(productId);
+            myRentedProducts.push(product);
+            seenRentedIds.add(productId);
+          }
         }
         if (rental.seller === userId) {
-          const product = await productService.getProductById(
-            rental.product as number,
-          );
-          myLentProducts.push(product);
+          const productId = rental.product as number;
+          if (!seenLentIds.has(productId)) {
+            const product = await productService.getProductById(productId);
+            myLentProducts.push(product);
+            seenLentIds.add(productId);
+          }
         }
       }
 

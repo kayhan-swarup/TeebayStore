@@ -52,6 +52,13 @@ const ProductDetailScreen = () => {
     setShowBuyDialog(true);
   };
   const handleRent = () => {
+    if (sold) {
+      Alert.alert(
+        'Info',
+        'This product has already been sold or out of stock.',
+      );
+      return;
+    }
     setShowRentDialog(true);
   };
 
@@ -184,25 +191,29 @@ const ProductDetailScreen = () => {
       {/* Action Buttons */}
       {user?.id !== selectedProduct?.seller ? (
         <View style={styles.actionButtons}>
-          <Button
-            mode="contained"
-            onPress={handleBuy}
-            style={[styles.button, styles.buyButton]}
-            labelStyle={styles.buttonLabel}
-            icon="shopping"
-          >
-            Buy Product
-          </Button>
+          {parseFloat(product.purchase_price) !== 0 && (
+            <Button
+              mode="contained"
+              onPress={handleBuy}
+              style={[styles.button, styles.buyButton]}
+              labelStyle={styles.buttonLabel}
+              icon="shopping"
+            >
+              Buy Product
+            </Button>
+          )}
 
-          <Button
-            mode="contained"
-            onPress={handleRent}
-            style={[styles.button, styles.rentButton]}
-            labelStyle={styles.buttonLabel}
-            icon="calendar"
-          >
-            Rent Product
-          </Button>
+          {parseFloat(product.rent_price) !== 0 && (
+            <Button
+              mode="contained"
+              onPress={handleRent}
+              style={[styles.button, styles.rentButton]}
+              labelStyle={styles.buttonLabel}
+              icon="calendar"
+            >
+              Rent Product
+            </Button>
+          )}
         </View>
       ) : (
         <Text style={styles.views}>This is your product listing.</Text>
