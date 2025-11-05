@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from '../constants';
 import { CreateProductRequest, Product } from '../types';
 import { productService } from '../api/services/product.service';
 import { getErrorMessage } from '../api/client';
+import { transactionsService } from '../api/services/transaction.service';
 
 interface ProductState {
   products: Product[];
@@ -36,7 +37,12 @@ export const useProductStore = create<ProductState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const products = await productService.getAllProducts();
-      set({ products, isLoading: false });
+      const purchases = await transactionsService.getPurchases();
+      const purchasedProductIds = purchases.map(purchase => purchase.product);
+      const availableProducts = products.filter(
+        product => !purchasedProductIds.includes(product.id),
+      );
+      set({ products: availableProducts, isLoading: false });
     } catch (error) {
       set({ error: 'Failed to fetch products.', isLoading: false });
     }
@@ -46,7 +52,12 @@ export const useProductStore = create<ProductState>((set, get) => ({
     const myProducts = (await productService.getAllProducts()).filter(
       item => item.seller === seller,
     );
-    set({ myProducts, isLoading: false });
+    const purchases = await transactionsService.getPurchases();
+    const purchasedProductIds = purchases.map(purchase => purchase.product);
+    const availableProducts = myProducts.filter(
+      product => !purchasedProductIds.includes(product.id),
+    );
+    set({ myProducts: availableProducts, isLoading: false });
   },
   createProduct: async (data: CreateProductRequest) => {
     try {
