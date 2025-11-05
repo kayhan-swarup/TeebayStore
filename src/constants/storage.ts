@@ -8,6 +8,7 @@ export const STORAGE_KEYS = {
   // Biometric
   BIOMETRIC_ENABLED: '@teebay_biometric_enabled',
   BIOMETRIC_USERNAME: '@teebay_biometric_username',
+  BIOMETRIC_PASSWORD: '@teebay_biometric_password',
 
   // Firebase
   FCM_TOKEN: '@teebay_fcm_token',

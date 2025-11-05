@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useAuthStore } from '../../store/authStore';
 import { Button } from '../../components/common/Button';
+import { biometricService } from '../../services/biometric.service';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuthStore();
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+  useEffect(() => {
+    const checkBiometric = async () => {
+      const enabled = await biometricService.isBiometricEnabled();
+      setBiometricEnabled(enabled);
+    };
+    checkBiometric();
+  }, []);
+  const disableBiometric = async () => {
+    await biometricService.disableBiometric();
+    setBiometricEnabled(false);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -28,14 +41,17 @@ export default function ProfileScreen() {
           <Text style={styles.value}>{user.address}</Text>
         </View>
       )}
+      <View style={styles.buttonContainer}>
+        {biometricEnabled && (
+          <Button onPress={disableBiometric} mode={'outlined'}>
+            Disable Biometric
+          </Button>
+        )}
 
-      <Button
-        onPress={handleLogout}
-        mode="outlined"
-        style={styles.logoutButton}
-      >
-        LOGOUT
-      </Button>
+        <Button onPress={handleLogout} mode="outlined">
+          LOGOUT
+        </Button>
+      </View>
     </View>
   );
 }
@@ -66,7 +82,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000000',
   },
-  logoutButton: {
+  buttonContainer: {
     marginTop: 'auto',
+    gap: 12,
   },
 });

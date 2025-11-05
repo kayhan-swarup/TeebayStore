@@ -34,7 +34,7 @@ class BiometricService {
     await AsyncStorage.multiSet([
       [STORAGE_KEYS.BIOMETRIC_ENABLED, 'true'],
       [STORAGE_KEYS.BIOMETRIC_USERNAME, encodedEmail],
-      ['@teebay_biometric_password', encodedPassword], // Add this to constants
+      [STORAGE_KEYS.BIOMETRIC_PASSWORD, encodedPassword], // Add this to constants
     ]);
   }
   async getCredentials(): Promise<{ email: string; password: string } | null> {
@@ -43,7 +43,7 @@ class BiometricService {
         await AsyncStorage.multiGet([
           STORAGE_KEYS.BIOMETRIC_ENABLED,
           STORAGE_KEYS.BIOMETRIC_USERNAME,
-          '@teebay_biometric_password',
+          STORAGE_KEYS.BIOMETRIC_PASSWORD,
         ]);
 
       if (enabled[1] !== 'true' || !encodedEmail[1] || !encodedPassword[1]) {
@@ -69,7 +69,7 @@ class BiometricService {
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.BIOMETRIC_ENABLED,
       STORAGE_KEYS.BIOMETRIC_USERNAME,
-      '@teebay_biometric_password',
+      STORAGE_KEYS.BIOMETRIC_PASSWORD,
     ]);
   }
 }
