@@ -71,7 +71,7 @@ const TransactionsScreen = () => {
       renderItem={({ item }) => {
         return <ProductCard product={item} />;
       }}
-      keyExtractor={item => item.id.toString()}
+      keyExtractor={item => item.id.toString() + Math.random().toString()}
       contentContainerStyle={styles.emptyList}
       ListEmptyComponent={
         <EmptyState message="You haven't sold any products yet" />
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   emptyList: {
-    flex: 1,
+    flexGrow: 1,
   },
   emptyContainer: {
     flex: 1,
