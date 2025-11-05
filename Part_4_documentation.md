@@ -213,6 +213,9 @@ const lentItems = rentals.filter(r => r.seller === user.id);
 
 ## Part 4: Limitations
 
-#### Product status
+#### Product
 
 - Product should have status `PURCHASED`, `NOT_PURCHASED` so that already sold product don't show up in All Product List
+- Firebase token is only passed along with login api or register api, when token refreshes form onTokenRefresh, there is no endpoint for that
+- A product can be purchased multiple time, it should show error from backend if tried
+- Transaction apis only has all purchases, and all rentals list, should be able to filter by seller, buyer, or renter id

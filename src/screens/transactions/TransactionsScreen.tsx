@@ -41,7 +41,7 @@ const TransactionsScreen = () => {
   );
   const handleRefresh = async () => {
     setRefreshing(true);
-    // await loadAllTransactions();
+    await loadAllTransactions();
     setRefreshing(false);
   };
 
