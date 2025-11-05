@@ -219,3 +219,4 @@ const lentItems = rentals.filter(r => r.seller === user.id);
 - Firebase token is only passed along with login api or register api, when token refreshes form onTokenRefresh, there is no endpoint for that
 - A product can be purchased multiple time, it should show error from backend if tried
 - Transaction apis only has all purchases, and all rentals list, should be able to filter by seller, buyer, or renter id
+- Rent time overlap is ignored due to time crunch
