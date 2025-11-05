@@ -15,7 +15,7 @@ import { useProductStore } from '../../store/productStore';
 import { CATEGORIES, Category } from '../../constants';
 import { Loading } from '../../components/common/Loading';
 import { TextInput } from '../../components/common/TextInput';
-import { Button, Chip } from 'react-native-paper';
+import { Button, Chip, Dialog, Portal } from 'react-native-paper';
 import { openCamera, openGallery } from '../../utils/imagePicker';
 
 type EditProductRouteProp = RouteProp<RootStackParamList, 'EditProduct'>;
@@ -24,8 +24,13 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const EditProductScreen = () => {
   const route = useRoute<EditProductRouteProp>();
   const navigation = useNavigation<NavigationProp>();
-  const { selectedProduct, isLoading, fetchProductById, updateProduct } =
-    useProductStore();
+  const {
+    selectedProduct,
+    isLoading,
+    fetchProductById,
+    updateProduct,
+    deleteProduct,
+  } = useProductStore();
   const { productId } = route.params;
 
   const [title, setTitle] = useState('');
@@ -36,6 +41,28 @@ const EditProductScreen = () => {
   const [rentOption, setRentOption] = useState<'hour' | 'day'>('day');
   const [productImage, setProductImage] = useState<any>(null);
   const [imagePreview, setImagePreview] = useState<string | undefined>();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await deleteProduct(productId);
+      setShowDeleteDialog(false);
+      Alert.alert('Success', 'Product deleted successfully', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error: any) {
+      console.error('Product delete error:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        'Failed to delete product';
+      Alert.alert('Error', errorMessage);
+    }
+  };
 
   useEffect(() => {
     loadProduct();
@@ -285,6 +312,18 @@ const EditProductScreen = () => {
                 </TouchableOpacity>
               </View>
             </View>
+            <Button
+              mode="outlined"
+              onPress={() => setShowDeleteDialog(true)}
+              style={styles.deleteButton}
+              labelStyle={styles.deleteButtonLabel}
+              loading={isLoading}
+              disabled={isLoading}
+              buttonColor="#FFF"
+              textColor="#D32F2F"
+            >
+              Delete Product
+            </Button>
             {/* Submit Button */}
             <Button
               mode="contained"
@@ -299,6 +338,26 @@ const EditProductScreen = () => {
           </View>
         </View>
       </View>
+      <Portal>
+        <Dialog
+          visible={showDeleteDialog}
+          onDismiss={() => setShowDeleteDialog(false)}
+        >
+          <Dialog.Title>Are you sure?</Dialog.Title>
+          <Dialog.Content>
+            <Text>
+              This action cannot be undone. The product will be permanently
+              deleted.
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setShowDeleteDialog(false)}>Cancel</Button>
+            <Button onPress={handleDelete} textColor="#D32F2F">
+              Yes, Delete
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </ScrollView>
   );
 };
@@ -417,5 +476,17 @@ const styles = StyleSheet.create({
   submitButtonLabel: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  deleteButton: {
+    marginTop: 30,
+    marginBottom: 12,
+    paddingVertical: 8,
+    borderColor: '#D32F2F',
+    borderWidth: 2,
+  },
+  deleteButtonLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#D32F2F',
   },
 });

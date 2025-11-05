@@ -93,4 +93,7 @@ export const productService = {
     );
     return response.data;
   },
+  async deleteProduct(id: number): Promise<void> {
+    await apiClient.delete(API_ENDPOINTS.PRODUCTS.DELETE(id));
+  },
 };

@@ -21,6 +21,7 @@ interface ProductState {
     id: number,
     data: Partial<CreateProductRequest>,
   ) => Promise<void>;
+  deleteProduct: (id: number) => Promise<void>;
   clearError: () => void;
 }
 
@@ -91,6 +92,23 @@ export const useProductStore = create<ProductState>((set, get) => ({
           state.selectedProduct?.id === id
             ? updatedProduct
             : state.selectedProduct,
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({
+        error: getErrorMessage(error),
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
+  deleteProduct: async (id: number) => {
+    try {
+      set({ isLoading: true, error: null });
+      await productService.deleteProduct(id);
+      set(state => ({
+        myProducts: state.myProducts.filter(p => p.id !== id),
+        products: state.products.filter(p => p.id !== id),
         isLoading: false,
       }));
     } catch (error) {
