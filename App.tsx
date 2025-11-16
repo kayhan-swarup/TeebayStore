@@ -39,6 +39,7 @@ function App() {
     // Listen for token refresh
     const unsubscribeTokenRefresh = firebaseService.onTokenRefresh(token => {
       console.log('New FCM token received:', token);
+      // send refreshed token to server
     });
 
     // Handle foreground notifications
