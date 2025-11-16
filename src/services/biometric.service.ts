@@ -27,7 +27,7 @@ class BiometricService {
     }
   }
   async saveCredentials(email: string, password: string): Promise<void> {
-    // Simple base64 encoding (for demo - use proper encryption in production)
+    // Simple base64 encoding
     const encodedEmail = Buffer.from(email).toString('base64');
     const encodedPassword = Buffer.from(password).toString('base64');
 
