@@ -184,6 +184,10 @@ export default function AddProductScreen() {
           Alert.alert('Error', 'Please enter a valid rent price');
           return false;
         }
+        if (formData.purchase_price === '0' && formData.rent_price === '0') {
+          Alert.alert('Error', 'Please set a purchase price or a rent price');
+          return false;
+        }
         return true;
       default:
         return true;

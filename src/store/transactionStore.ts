@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Product, Purchase, Rent } from '../types';
+import { Product, Purchase, Rent, RentalProduct } from '../types';
 import { transactionsService } from '../api/services/transaction.service';
 import { getErrorMessage } from '../api/client';
 import { productService } from '../api/services/product.service';
@@ -13,8 +13,8 @@ interface TransactionState {
   isLoading: boolean;
   error: string | null;
   selectedPurchase: Purchase | null;
-  borrowed: Rent[];
-  lent: Rent[];
+  borrowed: RentalProduct[];
+  lent: RentalProduct[];
 
   createPurchase: (buyerId: number, productId: number) => Promise<Purchase>;
   createRental: (
@@ -124,23 +124,31 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
       const seenLentIds = new Set<number>();
 
       const myRentedProducts: Product[] = [];
+      const borrowed: RentalProduct[] = [];
+      const lent: RentalProduct[] = [];
       const myLentProducts: Product[] = [];
       for (const rental of rentals) {
         if (rental.renter === userId) {
           const productId = rental.product as number;
-          if (!seenRentedIds.has(productId)) {
-            const product = await productService.getProductById(productId);
-            myRentedProducts.push(product);
-            seenRentedIds.add(productId);
-          }
+          const product = await productService.getProductById(productId);
+          myRentedProducts.push(product);
+          borrowed.push({ product, rent: rental });
+          // if (!seenRentedIds.has(productId)) {
+          //   const product = await productService.getProductById(productId);
+          //   myRentedProducts.push(product);
+          //   seenRentedIds.add(productId);
+          // }
         }
         if (rental.seller === userId) {
           const productId = rental.product as number;
-          if (!seenLentIds.has(productId)) {
-            const product = await productService.getProductById(productId);
-            myLentProducts.push(product);
-            seenLentIds.add(productId);
-          }
+          const product = await productService.getProductById(productId);
+          myLentProducts.push(product);
+          lent.push({ product, rent: rental });
+          // if (!seenLentIds.has(productId)) {
+          //   const product = await productService.getProductById(productId);
+          //   myLentProducts.push(product);
+          //   seenLentIds.add(productId);
+          // }
         }
       }
 
@@ -150,6 +158,8 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
         myRentals: myRentedProducts,
         lentItems: myLentProducts,
         isLoading: false,
+        borrowed,
+        lent,
       });
     } catch (error) {
       set({ error: getErrorMessage(error), isLoading: false });

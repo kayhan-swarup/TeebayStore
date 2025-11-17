@@ -89,11 +89,18 @@ const TransactionsScreen = () => {
   );
   const BorrowedRoute = () => (
     <FlatList
-      data={myRentals}
+      data={borrowed}
       renderItem={({ item }) => {
-        return <ProductCard product={item} rental="Borrowed" />;
+        return (
+          <ProductCard
+            product={item.product}
+            rental="Borrowed"
+            startDate={item.rent.rent_period_start_date}
+            endDate={item.rent.rent_period_end_date}
+          />
+        );
       }}
-      keyExtractor={item => item.id.toString()}
+      keyExtractor={item => item.rent.id.toString()}
       contentContainerStyle={styles.emptyList}
       ListEmptyComponent={
         <EmptyState message="You haven't rented any products yet" />
@@ -109,11 +116,18 @@ const TransactionsScreen = () => {
   );
   const LentRoute = () => (
     <FlatList
-      data={lentItems}
+      data={lent}
       renderItem={({ item }) => {
-        return <ProductCard product={item} />;
+        return (
+          <ProductCard
+            product={item.product}
+            rental="Lent"
+            startDate={item.rent.rent_period_start_date}
+            endDate={item.rent.rent_period_end_date}
+          />
+        );
       }}
-      keyExtractor={item => item.id.toString()}
+      keyExtractor={item => item.rent.id.toString()}
       contentContainerStyle={styles.emptyList}
       ListEmptyComponent={
         <EmptyState message="You haven't lent any products yet" />

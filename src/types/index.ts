@@ -55,6 +55,10 @@ export interface Product {
   seller_details?: User;
   date_posted: string;
 }
+export interface RentalProduct {
+  product: Product;
+  rent: Rent;
+}
 
 export interface CreateProductRequest {
   title: string;

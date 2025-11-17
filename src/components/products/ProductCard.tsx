@@ -87,18 +87,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Prices */}
           <View style={styles.priceContainer}>
-            <View style={styles.priceItem}>
-              <Text style={styles.priceLabel}>Purchase:</Text>
-              <Text style={styles.priceValue}>
-                {formatPrice(product.purchase_price)}
-              </Text>
-            </View>
-            <View style={styles.priceItem}>
-              <Text style={styles.priceLabel}>Rent:</Text>
-              <Text style={styles.priceValue}>
-                {formatPrice(product.rent_price)}/{product.rent_option}
-              </Text>
-            </View>
+            {parseFloat(product.purchase_price) !== 0 && (
+              <View style={styles.priceItem}>
+                <Text style={styles.priceLabel}>Purchase:</Text>
+                <Text style={styles.priceValue}>
+                  {formatPrice(product.purchase_price)}
+                </Text>
+              </View>
+            )}
+            {parseFloat(product.rent_price) !== 0 && (
+              <View style={styles.priceItem}>
+                <Text style={styles.priceLabel}>Rent:</Text>
+                <Text style={styles.priceValue}>
+                  {formatPrice(product.rent_price)}/{product.rent_option}
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Description */}
@@ -107,17 +111,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </Text>
 
           {/* Footer - Date Posted */}
+          {rental && startDate && endDate && (
+            <Text style={styles.dateText && { fontWeight: 'bold' }}>
+              {`${rental} from ${formatSimpleDate(
+                startDate,
+              )} to ${formatSimpleDate(endDate)}`}
+            </Text>
+          )}
           <View style={styles.footer}>
             <Text style={styles.dateText}>
               Posted {formatDate(product.date_posted)}
             </Text>
-            {rental && startDate && endDate && (
-              <Text style={styles.dateText}>
-                {`${rental} from ${formatSimpleDate(
-                  startDate,
-                )} to ${formatSimpleDate(endDate)}`}
-              </Text>
-            )}
           </View>
         </Card.Content>
       </Card>
@@ -177,9 +181,9 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   footer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
