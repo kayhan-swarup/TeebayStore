@@ -13,6 +13,8 @@ import { useNavigation } from '@react-navigation/native';
 import { Button } from '../../components/common/Button';
 import { RegisterRequest } from '../../types';
 import { useAuthStore } from '../../store/authStore';
+import * as Yup from 'yup';
+import { registerSchema } from '../../validations/schema';
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
@@ -28,45 +30,63 @@ export default function RegisterScreen() {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const validate = () => {
-    const newErrors: { [key: string]: string } = {};
+  // const validate = () => {
+  //   const newErrors: { [key: string]: string } = {};
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
+  //   if (!formData.firstName.trim()) {
+  //     newErrors.firstName = 'First name is required';
+  //   }
+
+  //   if (!formData.lastName.trim()) {
+  //     newErrors.lastName = 'Last name is required';
+  //   }
+
+  //   if (!formData.address.trim()) {
+  //     newErrors.address = 'Address is required';
+  //   }
+
+  //   if (!formData.email.trim()) {
+  //     newErrors.email = 'Email is required';
+  //   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+  //     newErrors.email = 'Email is invalid';
+  //   }
+
+  //   if (!formData.phoneNumber.trim()) {
+  //     newErrors.phoneNumber = 'Phone number is required';
+  //   }
+
+  //   if (!formData.password) {
+  //     newErrors.password = 'Password is required';
+  //   } else if (formData.password.length < 6) {
+  //     newErrors.password = 'Password must be at least 6 characters';
+  //   }
+
+  //   if (!formData.confirmPassword) {
+  //     newErrors.confirmPassword = 'Please confirm your password';
+  //   } else if (formData.password !== formData.confirmPassword) {
+  //     newErrors.confirmPassword = 'Passwords do not match';
+  //   }
+
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
+  const validate = async () => {
+    try {
+      await registerSchema.validate(formData, { abortEarly: false });
+      setErrors({});
+      return true;
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const newErrors: { [key: string]: string } = {};
+        err.inner.forEach(error => {
+          if (error.path) {
+            newErrors[error.path] = error.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return false;
     }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
-
-    if (!formData.address.trim()) {
-      newErrors.address = 'Address is required';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-
-    if (!formData.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Phone number is required';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
   const handleSignInPress = () => {
@@ -94,12 +114,31 @@ export default function RegisterScreen() {
       console.error('Registration failed:', err);
     }
   };
-  const updateField = (field: string, value: string) => {
+  // const updateField = (field: string, value: string) => {
+  //   setFormData({ ...formData, [field]: value });
+  //   if (errors[field]) {
+  //     const newErrors = { ...errors };
+  //     delete newErrors[field];
+  //     setErrors(newErrors);
+  //   }
+  // };
+  const updateField = async (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
+
+    // Clear error on change
     if (errors[field]) {
       const newErrors = { ...errors };
       delete newErrors[field];
       setErrors(newErrors);
+    }
+
+    // Optional: Validate single field on blur
+    try {
+      await registerSchema.validateAt(field, { ...formData, [field]: value });
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        setErrors({ ...errors, [field]: err.message });
+      }
     }
   };
 

@@ -26,12 +26,18 @@ const ProductDetailScreen = () => {
     createRental,
     getPurchaseByProductId,
     selectedPurchase,
+    rentDates,
+    getRentByProductId,
   } = useTransactionStore();
   const { user } = useAuthStore();
   const [showBuyDialog, setShowBuyDialog] = useState(false);
   const [showRentDialog, setShowRentDialog] = useState(false);
 
   const { productId } = route.params;
+
+  useEffect(() => {
+    getRentByProductId(productId);
+  }, [productId]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -227,6 +233,7 @@ const ProductDetailScreen = () => {
         visible={showRentDialog}
         onDismiss={() => setShowRentDialog(false)}
         onConfirm={handleRentConfirm}
+        rentDates={rentDates}
       />
     </ScrollView>
   );

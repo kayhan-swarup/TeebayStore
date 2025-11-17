@@ -15,6 +15,7 @@ interface TransactionState {
   selectedPurchase: Purchase | null;
   borrowed: RentalProduct[];
   lent: RentalProduct[];
+  rentDates: Rent[];
 
   createPurchase: (buyerId: number, productId: number) => Promise<Purchase>;
   createRental: (
@@ -26,6 +27,7 @@ interface TransactionState {
   ) => Promise<Rent>;
   fetchAllTransactions: (userId: number) => Promise<void>;
   getPurchaseByProductId: (productId: number) => Promise<void>;
+  getRentByProductId: (productId: number) => Promise<void>;
 }
 
 export const useTransactionStore = create<TransactionState>((set, get) => ({
@@ -40,6 +42,7 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
   selectedPurchase: null,
   borrowed: [],
   lent: [],
+  rentDates: [],
 
   createPurchase: async (buyerId: number, productId: number) => {
     try {
@@ -177,6 +180,15 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
         isLoading: false,
         selectedPurchase: null,
       });
+    }
+  },
+  getRentByProductId: async (productId: number) => {
+    try {
+      const rentals = await transactionsService.getRentals();
+
+      set({ rentDates: rentals.filter(r => r.product === productId) });
+    } catch (error) {
+      set({ error: getErrorMessage(error) });
     }
   },
 }));

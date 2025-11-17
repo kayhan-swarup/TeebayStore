@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Modal, TouchableOpacity, Alert } from 'react-native';
 import { Text, Button, TextInput } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
+import { useTransactionStore } from '../../store/transactionStore';
 
 interface RentPeriodDialogProps {
   visible: boolean;
   onDismiss: () => void;
   onConfirm: (fromDate: Date, toDate: Date) => void;
   loading?: boolean;
+  rentDates?: Rent[];
 }
 
 export const RentPeriodDialog: React.FC<RentPeriodDialogProps> = ({
@@ -15,6 +17,7 @@ export const RentPeriodDialog: React.FC<RentPeriodDialogProps> = ({
   onDismiss,
   onConfirm,
   loading = false,
+  rentDates = [],
 }) => {
   const [fromDate, setFromDate] = useState<Date>(new Date());
   const [toDate, setToDate] = useState<Date>(
@@ -29,6 +32,20 @@ export const RentPeriodDialog: React.FC<RentPeriodDialogProps> = ({
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
+
+  const blockedDates = rentDates.map(d =>
+    new Date(d.rent_period_start_date).toDateString(),
+  );
+  const checkDateBlocked = (date: Date) => {
+    return blockedDates.includes(date.toDateString());
+  };
+  function isSameDay(d1: Date, d2: Date) {
+    return (
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate()
+    );
+  }
 
   const handleConfirm = () => {
     // Validate dates
@@ -114,6 +131,13 @@ export const RentPeriodDialog: React.FC<RentPeriodDialogProps> = ({
         mode="date"
         minimumDate={new Date()}
         onConfirm={date => {
+          if (checkDateBlocked(date)) {
+            Alert.alert(
+              'Date Conflict',
+              'This date is booked already. Please choose another date.',
+            );
+            return;
+          }
           setFromDate(date);
           setShowFromPicker(false);
           // If toDate is before the new fromDate, adjust it
