@@ -340,6 +340,7 @@ const EditProductScreen = () => {
       </View>
       <Portal>
         <Dialog
+          style={styles.deleteDialog}
           visible={showDeleteDialog}
           onDismiss={() => setShowDeleteDialog(false)}
         >
@@ -488,5 +489,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#D32F2F',
+  },
+  deleteDialog: {
+    borderRadius: 5,
   },
 });

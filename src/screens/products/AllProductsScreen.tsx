@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Product, RootStackParamList } from '../../types';
 import { DUMMY_PRODUCT, DUMMY_PRODUCTS } from '../../constants';
 import ProductCard from '../../components/products/ProductCard';
 import { useProductStore } from '../../store/productStore';
+import { Searchbar } from 'react-native-paper';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export default function AllProductsScreen() {
@@ -17,6 +18,21 @@ export default function AllProductsScreen() {
   useEffect(() => {
     loadProducts();
   }, []);
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setFilteredProducts(products);
+    } else {
+      setFilteredProducts(
+        products.filter(
+          product =>
+            product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            product.description
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()),
+        ),
+      );
+    }
+  }, [searchQuery, products]);
   const renderProduct = ({ item }: { item: Product }) => (
     <ProductCard product={item} onPress={handleProductPress} />
   );
@@ -46,8 +62,16 @@ export default function AllProductsScreen() {
   };
   return (
     <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <Searchbar
+          style={styles.searchBar}
+          placeholder="Search Products"
+          onChangeText={setSearchQuery}
+          value={searchQuery}
+        />
+      </View>
       <FlatList
-        data={products}
+        data={filteredProducts}
         renderItem={renderProduct}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={
