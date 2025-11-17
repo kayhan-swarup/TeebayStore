@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
 import { Product } from '../../types';
 import { Card, Chip } from 'react-native-paper';
-interface ProductCardProps {
+interface RentalCardProps {
   product: Product;
   onPress?: (product: Product) => void;
   showActions?: boolean;
@@ -11,7 +11,7 @@ interface ProductCardProps {
   endDate?: string | null;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
+const RentalCard: React.FC<RentalCardProps> = ({
   product,
   onPress,
   showActions = false,
@@ -125,7 +125,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   );
 };
 
-export default ProductCard;
+export default RentalCard;
 
 const styles = StyleSheet.create({
   card: {

@@ -13,6 +13,8 @@ interface TransactionState {
   isLoading: boolean;
   error: string | null;
   selectedPurchase: Purchase | null;
+  borrowed: Rent[];
+  lent: Rent[];
 
   createPurchase: (buyerId: number, productId: number) => Promise<Purchase>;
   createRental: (
@@ -36,6 +38,8 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
   isLoading: false,
   error: null,
   selectedPurchase: null,
+  borrowed: [],
+  lent: [],
 
   createPurchase: async (buyerId: number, productId: number) => {
     try {

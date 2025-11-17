@@ -29,6 +29,8 @@ const TransactionsScreen = () => {
     soldItems,
     myRentals,
     lentItems,
+    borrowed,
+    lent,
     fetchAllTransactions,
   } = useTransactionStore();
 
@@ -89,7 +91,7 @@ const TransactionsScreen = () => {
     <FlatList
       data={myRentals}
       renderItem={({ item }) => {
-        return <ProductCard product={item} />;
+        return <ProductCard product={item} rental="Borrowed" />;
       }}
       keyExtractor={item => item.id.toString()}
       contentContainerStyle={styles.emptyList}
