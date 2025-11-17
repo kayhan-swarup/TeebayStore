@@ -17,7 +17,7 @@ This document outlines the complete implementation strategy for the Teebay marke
 
 ### Part 2: Product Management (Multi-page Form)
 
-- Add Product (multi-page form with back/forth navigation)
+- Add Product (multi-page form with back/forth navigation)react native
 - Edit Product
 - Delete Product
 - Multi-select categories (6 options)
