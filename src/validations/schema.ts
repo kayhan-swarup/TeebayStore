@@ -1,5 +1,4 @@
 import * as Yup from 'yup';
-import { Category } from '../constants';
 export const registerSchema = Yup.object().shape({
   firstName: Yup.string()
     .trim()
