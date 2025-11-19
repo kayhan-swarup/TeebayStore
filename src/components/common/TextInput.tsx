@@ -6,6 +6,7 @@ interface TextInputProps {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   secureTextEntry?: boolean;
   error?: string;
@@ -28,6 +29,7 @@ export const TextInput: React.FC<TextInputProps> = ({
   label,
   value,
   onChangeText,
+  onBlur,
   placeholder,
   secureTextEntry = false,
   error,
@@ -48,6 +50,7 @@ export const TextInput: React.FC<TextInputProps> = ({
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
+        onBlur={onBlur}
         secureTextEntry={secureTextEntry}
         error={!!error}
         disabled={disabled}

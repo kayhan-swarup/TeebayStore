@@ -3,6 +3,7 @@ import { View, StyleSheet, Modal, TouchableOpacity, Alert } from 'react-native';
 import { Text, Button, TextInput } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
 import { useTransactionStore } from '../../store/transactionStore';
+import { Rent } from '../../types';
 
 interface RentPeriodDialogProps {
   visible: boolean;

@@ -7,139 +7,70 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import { TextInput } from '../../components/common/TextInput';
 import { useNavigation } from '@react-navigation/native';
 import { Button } from '../../components/common/Button';
 import { RegisterRequest } from '../../types';
 import { useAuthStore } from '../../store/authStore';
-import * as Yup from 'yup';
 import { registerSchema } from '../../validations/schema';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+type RegisterFormData = {
+  firstName: string;
+  lastName: string;
+  address: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+};
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
   const { register, isLoading, error, clearError } = useAuthStore();
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    address: '',
-    email: '',
-    phoneNumber: '',
-    password: '',
-    confirmPassword: '',
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormData>({
+    resolver: yupResolver(registerSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      address: '',
+      email: '',
+      phoneNumber: '',
+      password: '',
+      confirmPassword: '',
+    },
   });
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  // const validate = () => {
-  //   const newErrors: { [key: string]: string } = {};
+  const onSubmit = async (data: RegisterFormData) => {
+    clearError();
 
-  //   if (!formData.firstName.trim()) {
-  //     newErrors.firstName = 'First name is required';
-  //   }
-
-  //   if (!formData.lastName.trim()) {
-  //     newErrors.lastName = 'Last name is required';
-  //   }
-
-  //   if (!formData.address.trim()) {
-  //     newErrors.address = 'Address is required';
-  //   }
-
-  //   if (!formData.email.trim()) {
-  //     newErrors.email = 'Email is required';
-  //   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-  //     newErrors.email = 'Email is invalid';
-  //   }
-
-  //   if (!formData.phoneNumber.trim()) {
-  //     newErrors.phoneNumber = 'Phone number is required';
-  //   }
-
-  //   if (!formData.password) {
-  //     newErrors.password = 'Password is required';
-  //   } else if (formData.password.length < 6) {
-  //     newErrors.password = 'Password must be at least 6 characters';
-  //   }
-
-  //   if (!formData.confirmPassword) {
-  //     newErrors.confirmPassword = 'Please confirm your password';
-  //   } else if (formData.password !== formData.confirmPassword) {
-  //     newErrors.confirmPassword = 'Passwords do not match';
-  //   }
-
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // };
-  const validate = async () => {
     try {
-      await registerSchema.validate(formData, { abortEarly: false });
-      setErrors({});
-      return true;
+      const registerData: RegisterRequest = {
+        first_name: data.firstName.trim(),
+        last_name: data.lastName.trim(),
+        address: data.address.trim(),
+        email: data.email.trim(),
+        password: data.password,
+        phone_number: data.phoneNumber.trim(),
+        firebase_console_manager_token: '',
+      };
+
+      await register(registerData);
     } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const newErrors: { [key: string]: string } = {};
-        err.inner.forEach(error => {
-          if (error.path) {
-            newErrors[error.path] = error.message;
-          }
-        });
-        setErrors(newErrors);
-      }
-      return false;
+      console.error('Registration failed:', err);
     }
   };
 
   const handleSignInPress = () => {
     navigation.navigate('Login' as never);
-  };
-  const handleRegister = async () => {
-    if (!validate()) return;
-
-    clearError();
-
-    try {
-      const registerData: RegisterRequest = {
-        first_name: formData.firstName.trim(),
-        last_name: formData.lastName.trim(),
-        address: formData.address.trim(),
-        email: formData.email.trim(),
-        password: formData.password,
-        phone_number: formData.phoneNumber.trim(),
-        firebase_console_manager_token: '', // Will be set later
-      };
-
-      await register(registerData);
-      // Navigation will be handled by App.tsx based on auth state
-    } catch (err) {
-      console.error('Registration failed:', err);
-    }
-  };
-  // const updateField = (field: string, value: string) => {
-  //   setFormData({ ...formData, [field]: value });
-  //   if (errors[field]) {
-  //     const newErrors = { ...errors };
-  //     delete newErrors[field];
-  //     setErrors(newErrors);
-  //   }
-  // };
-  const updateField = async (field: string, value: string) => {
-    setFormData({ ...formData, [field]: value });
-
-    // Clear error on change
-    if (errors[field]) {
-      const newErrors = { ...errors };
-      delete newErrors[field];
-      setErrors(newErrors);
-    }
-
-    // Optional: Validate single field on blur
-    try {
-      await registerSchema.validateAt(field, { ...formData, [field]: value });
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        setErrors({ ...errors, [field]: err.message });
-      }
-    }
   };
 
   return (
@@ -156,81 +87,130 @@ export default function RegisterScreen() {
           <Text style={styles.title}>SIGN UP</Text>
 
           {/* First Name */}
-          <TextInput
-            label="First Name"
-            placeholder="First Name"
-            value={formData.firstName}
-            onChangeText={text => updateField('firstName', text)}
-            error={errors.firstName}
+          <Controller
+            control={control}
+            name="firstName"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="First Name"
+                placeholder="First Name"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={errors.firstName?.message}
+              />
+            )}
           />
 
           {/* Last Name */}
-          <TextInput
-            label="Last Name"
-            placeholder="Last Name"
-            value={formData.lastName}
-            onChangeText={text => updateField('lastName', text)}
-            error={errors.lastName}
+          <Controller
+            control={control}
+            name="lastName"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Last Name"
+                placeholder="Last Name"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={errors.lastName?.message}
+              />
+            )}
           />
 
           {/* Address */}
-          <TextInput
-            label="Address"
-            placeholder="Address"
-            value={formData.address}
-            onChangeText={text => updateField('address', text)}
-            error={errors.address}
+          <Controller
+            control={control}
+            name="address"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Address"
+                placeholder="Address"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={errors.address?.message}
+              />
+            )}
           />
 
           {/* Email */}
-          <TextInput
-            label="Email"
-            placeholder="Email"
-            value={formData.email}
-            onChangeText={text => updateField('email', text)}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            error={errors.email}
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Email"
+                placeholder="Email"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                error={errors.email?.message}
+              />
+            )}
           />
 
           {/* Phone Number */}
-          <TextInput
-            label="Phone Number"
-            placeholder="Phone Number"
-            value={formData.phoneNumber}
-            onChangeText={text => updateField('phoneNumber', text)}
-            keyboardType="phone-pad"
-            error={errors.phoneNumber}
+          <Controller
+            control={control}
+            name="phoneNumber"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Phone Number"
+                placeholder="Phone Number"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                keyboardType="phone-pad"
+                error={errors.phoneNumber?.message}
+              />
+            )}
           />
 
           {/* Password */}
-          <TextInput
-            label="Password"
-            placeholder="Password"
-            value={formData.password}
-            onChangeText={text => updateField('password', text)}
-            secureTextEntry
-            autoCapitalize="none"
-            error={errors.password}
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Password"
+                placeholder="Password"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                secureTextEntry
+                autoCapitalize="none"
+                error={errors.password?.message}
+              />
+            )}
           />
 
           {/* Confirm Password */}
-          <TextInput
-            label="Confirm Password"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChangeText={text => updateField('confirmPassword', text)}
-            secureTextEntry
-            autoCapitalize="none"
-            error={errors.confirmPassword}
+          <Controller
+            control={control}
+            name="confirmPassword"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Confirm Password"
+                placeholder="Confirm Password"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                secureTextEntry
+                autoCapitalize="none"
+                error={errors.confirmPassword?.message}
+              />
+            )}
           />
 
           {/* Register Button */}
           <Button
-            onPress={handleRegister}
-            loading={isLoading}
-            disabled={isLoading}
+            onPress={handleSubmit(onSubmit)}
+            loading={isLoading || isSubmitting}
+            disabled={isLoading || isSubmitting}
             style={styles.registerButton}
           >
             REGISTER
