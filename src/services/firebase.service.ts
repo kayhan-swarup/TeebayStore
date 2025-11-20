@@ -115,6 +115,7 @@ class FirebaseService {
    * Clear cached token when user logs out
    */
   clearToken() {
+    messaging().deleteToken();
     this.fcmToken = null;
   }
 }
