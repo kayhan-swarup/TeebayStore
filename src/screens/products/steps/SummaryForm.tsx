@@ -2,20 +2,16 @@ import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { Category } from '../../../constants';
 import { Card, Chip, Divider } from 'react-native-paper';
+import { UseFormWatch } from 'react-hook-form';
+import { ProductFormData } from '../AddProductScreen';
 
 interface SummaryProps {
-  formData: {
-    title: string;
-    categories: Category[];
-    description: string;
-    product_image: any;
-    purchase_price: string;
-    rent_price: string;
-    rent_option: 'hour' | 'day';
-  };
+  watch: UseFormWatch<ProductFormData>;
 }
 
-const SummaryForm: React.FC<SummaryProps> = ({ formData }) => {
+const SummaryForm: React.FC<SummaryProps> = ({ watch }) => {
+  const formData = watch();
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Review Your Product</Text>

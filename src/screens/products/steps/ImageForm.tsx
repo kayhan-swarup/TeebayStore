@@ -2,63 +2,75 @@ import { Image, StyleSheet, View } from 'react-native';
 import React from 'react';
 import { Text, Button as PaperButton } from 'react-native-paper';
 import { openCamera, openGallery } from '../../../utils/imagePicker';
+import { Control, Controller } from 'react-hook-form';
+import { ProductFormData } from '../AddProductScreen';
 
 interface ImageProps {
-  value: any;
-  onChange: (value: any) => void;
+  control: Control<ProductFormData, any>;
+  error?: string;
 }
 
-const ImageForm: React.FC<ImageProps> = ({ value, onChange }) => {
-  const handleCamera = async () => {
-    await openCamera(onChange);
-  };
-
-  const handleGallery = async () => {
-    await openGallery(onChange);
-  };
+const ImageForm: React.FC<ImageProps> = ({ control, error }) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Upload Picture</Text>
-      <Text style={styles.subtitle}>Add a photo to showcase your product</Text>
+    <Controller
+      control={control}
+      name="product_image"
+      render={({ field: { onChange, value } }) => {
+        const handleCamera = async () => {
+          await openCamera(onChange);
+        };
 
-      {value ? (
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: value.uri }} style={styles.image} />
-          <PaperButton
-            mode="outlined"
-            onPress={() => onChange(null)}
-            style={styles.removeButton}
-          >
-            Remove Image
-          </PaperButton>
-        </View>
-      ) : (
-        <View style={styles.uploadContainer}>
-          <View style={styles.placeholder}>
-            <Text style={styles.placeholderIcon}>📷</Text>
-            <Text style={styles.placeholderText}>No image selected</Text>
+        const handleGallery = async () => {
+          await openGallery(onChange);
+        };
+
+        return (
+          <View style={styles.container}>
+            <Text style={styles.title}>Upload Picture</Text>
+            <Text style={styles.subtitle}>Add a photo to showcase your product</Text>
+
+            {value ? (
+              <View style={styles.imageContainer}>
+                <Image source={{ uri: value.uri }} style={styles.image} />
+                <PaperButton
+                  mode="outlined"
+                  onPress={() => onChange(null)}
+                  style={styles.removeButton}
+                >
+                  Remove Image
+                </PaperButton>
+              </View>
+            ) : (
+              <View style={styles.uploadContainer}>
+                <View style={styles.placeholder}>
+                  <Text style={styles.placeholderIcon}>📷</Text>
+                  <Text style={styles.placeholderText}>No image selected</Text>
+                </View>
+
+                <PaperButton
+                  mode="contained"
+                  icon="camera"
+                  onPress={handleCamera}
+                  style={styles.button}
+                >
+                  Take Photo
+                </PaperButton>
+
+                <PaperButton
+                  mode="outlined"
+                  icon="image"
+                  onPress={handleGallery}
+                  style={styles.button}
+                >
+                  Choose from Device
+                </PaperButton>
+              </View>
+            )}
+            {error && <Text style={styles.errorText}>{error}</Text>}
           </View>
-
-          <PaperButton
-            mode="contained"
-            icon="camera"
-            onPress={handleCamera}
-            style={styles.button}
-          >
-            Take Photo
-          </PaperButton>
-
-          <PaperButton
-            mode="outlined"
-            icon="image"
-            onPress={handleGallery}
-            style={styles.button}
-          >
-            Choose from Device
-          </PaperButton>
-        </View>
-      )}
-    </View>
+        );
+      }}
+    />
   );
 };
 
@@ -115,5 +127,11 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     borderColor: '#B00020',
+  },
+  errorText: {
+    color: '#B00020',
+    fontSize: 12,
+    marginTop: 8,
+    marginLeft: 4,
   },
 });

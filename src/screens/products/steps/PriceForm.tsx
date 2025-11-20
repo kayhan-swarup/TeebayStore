@@ -2,24 +2,19 @@ import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import { Text, SegmentedButtons } from 'react-native-paper';
 import { TextInput } from '../../../components/common/TextInput';
+import { Control, Controller } from 'react-hook-form';
+import { ProductFormData } from '../AddProductScreen';
 
 interface PriceProps {
-  purchasePrice: string;
-  rentPrice: string;
-  rentOption: 'hour' | 'day';
-  onChangePurchasePrice: (value: string) => void;
-  onChangeRentPrice: (value: string) => void;
-  onChangeRentOption: (value: 'hour' | 'day') => void;
+  control: Control<ProductFormData, any>;
+  errors?: {
+    purchase_price?: string;
+    rent_price?: string;
+    rent_option?: string;
+  };
 }
 
-const PriceForm: React.FC<PriceProps> = ({
-  purchasePrice,
-  rentPrice,
-  rentOption,
-  onChangePurchasePrice,
-  onChangeRentPrice,
-  onChangeRentOption,
-}) => {
+const PriceForm: React.FC<PriceProps> = ({ control, errors }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Set Your Price</Text>
@@ -27,36 +22,61 @@ const PriceForm: React.FC<PriceProps> = ({
         Define the purchase and rental pricing for your product
       </Text>
 
-      <TextInput
-        label="Purchase Price"
-        placeholder="0.00"
-        value={purchasePrice}
-        onChangeText={onChangePurchasePrice}
-        keyboardType="decimal-pad"
-        autoFocus
+      <Controller
+        control={control}
+        name="purchase_price"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            label="Purchase Price"
+            placeholder="0.00"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            keyboardType="decimal-pad"
+            autoFocus
+            error={errors?.purchase_price}
+          />
+        )}
       />
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Rent Options</Text>
 
-        <TextInput
-          label="Rent Price"
-          placeholder="0.00"
-          value={rentPrice}
-          onChangeText={onChangeRentPrice}
-          keyboardType="decimal-pad"
+        <Controller
+          control={control}
+          name="rent_price"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              label="Rent Price"
+              placeholder="0.00"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              keyboardType="decimal-pad"
+              error={errors?.rent_price}
+            />
+          )}
         />
 
         <Text style={styles.label}>Rent Period</Text>
-        <SegmentedButtons
-          value={rentOption}
-          onValueChange={value => onChangeRentOption(value as 'hour' | 'day')}
-          buttons={[
-            { value: 'hour', label: 'Per Hour' },
-            { value: 'day', label: 'Per Day' },
-          ]}
-          style={styles.segmentedButtons}
+        <Controller
+          control={control}
+          name="rent_option"
+          render={({ field: { onChange, value } }) => (
+            <SegmentedButtons
+              value={value}
+              onValueChange={onChange}
+              buttons={[
+                { value: 'hour', label: 'Per Hour' },
+                { value: 'day', label: 'Per Day' },
+              ]}
+              style={styles.segmentedButtons}
+            />
+          )}
         />
+        {errors?.rent_option && (
+          <Text style={styles.errorText}>{errors.rent_option}</Text>
+        )}
       </View>
     </View>
   );
@@ -97,5 +117,11 @@ const styles = StyleSheet.create({
   },
   segmentedButtons: {
     marginTop: 8,
+  },
+  errorText: {
+    color: '#B00020',
+    fontSize: 12,
+    marginTop: 8,
+    marginLeft: 4,
   },
 });

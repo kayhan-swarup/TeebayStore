@@ -1,24 +1,31 @@
 import { View, Text, StyleSheet } from 'react-native';
 import React from 'react';
 import { TextInput } from '../../../components/common/TextInput';
+import { Control, Controller } from 'react-hook-form';
+import { ProductFormData } from '../AddProductScreen';
 
 interface TitleProps {
-  value: string;
-  onChange: (value: string) => void;
+  control: Control<ProductFormData, any>;
+  error?: string;
 }
-export const TitleForm: React.FC<TitleProps> = ({ value, onChange }) => {
+export const TitleForm: React.FC<TitleProps> = ({ control, error }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Product Title</Text>
-      <Text style={styles.subtitle}>
-        Enter a clear and descriptive title for your product
-      </Text>
-      <TextInput
-        label="Title"
-        placeholder="e.g. iPhone 13 Pro Max"
-        value={value}
-        onChangeText={onChange}
-        autoFocus
+      <Controller
+        control={control}
+        name="title"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            label="Title"
+            placeholder="e.g. iPhone 13 Pro Max"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={error}
+            autoFocus
+          />
+        )}
       />
     </View>
   );

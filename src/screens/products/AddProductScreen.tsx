@@ -12,16 +12,12 @@ import DescriptionForm from './steps/DescriptionForm';
 import ImageForm from './steps/ImageForm';
 import PriceForm from './steps/PriceForm';
 import SummaryForm from './steps/SummaryForm';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { addProductSchema, AddProductFormData } from '../../validations/schema';
 
-interface ProductFormData {
-  title: string;
-  categories: Category[];
-  description: string;
-  product_image: any;
-  purchase_price: string;
-  rent_price: string;
-  rent_option: 'hour' | 'day';
-}
+export type ProductFormData = AddProductFormData;
+
 const TOTAL_STEPS = 6;
 
 export default function AddProductScreen() {
@@ -30,64 +26,95 @@ export default function AddProductScreen() {
   const { user } = useAuthStore();
   const { createProduct, isLoading } = useProductStore();
 
-  const [formData, setFormData] = useState<ProductFormData>({
-    title: '',
-    categories: [],
-    description: '',
-    product_image: null,
-    purchase_price: '',
-    rent_price: '',
-    rent_option: 'day',
+  const {
+    control,
+    handleSubmit,
+    trigger,
+    watch,
+    formState: { errors },
+  } = useForm<ProductFormData>({
+    resolver: yupResolver(addProductSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      title: '',
+      categories: [],
+      description: '',
+      product_image: undefined,
+      purchase_price: '',
+      rent_price: '',
+      rent_option: 'day',
+    },
   });
-  const updateFormData = (field: keyof ProductFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+
+  // Helper to safely extract error message
+  const getErrorMessage = (error: any): string | undefined => {
+    return error?.message;
   };
 
+  const onSubmit = async (data: ProductFormData) => {
+    if (!user) {
+      Alert.alert('Error', 'You must be logged in');
+      return;
+    }
+
+    try {
+      // Transform string prices to numbers for API
+      await createProduct({
+        title: data.title,
+        description: data.description,
+        categories: data.categories as Category[],
+        product_image: data.product_image,
+        purchase_price: parseFloat(data.purchase_price),
+        rent_price: parseFloat(data.rent_price),
+        rent_option: data.rent_option,
+        seller: user.id,
+      });
+
+      Alert.alert('Success', 'Product created successfully', [
+        { text: 'OK', onPress: () => navigation.goBack() },
+      ]);
+    } catch (error: any) {
+      Alert.alert('Error', error?.message || 'Failed to create product');
+    }
+  };
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return (
-          <TitleForm
-            value={formData.title}
-            onChange={value => updateFormData('title', value)}
-          />
-        );
+        return <TitleForm control={control} error={getErrorMessage(errors.title)} />;
       case 2:
         return (
           <CategoryForm
-            value={formData.categories}
-            onChange={value => updateFormData('categories', value)}
+            control={control}
+            error={getErrorMessage(errors.categories)}
           />
         );
       case 3:
         return (
           <DescriptionForm
-            value={formData.description}
-            onChange={value => updateFormData('description', value)}
+            control={control}
+            error={getErrorMessage(errors.description)}
           />
         );
       case 4:
         return (
           <ImageForm
-            value={formData.product_image}
-            onChange={value => updateFormData('product_image', value)}
+            control={control}
+            error={getErrorMessage(errors.product_image)}
           />
         );
       case 5:
         return (
           <PriceForm
-            purchasePrice={formData.purchase_price}
-            rentPrice={formData.rent_price}
-            rentOption={formData.rent_option}
-            onChangePurchasePrice={value =>
-              updateFormData('purchase_price', value)
-            }
-            onChangeRentPrice={value => updateFormData('rent_price', value)}
-            onChangeRentOption={value => updateFormData('rent_option', value)}
+            control={control}
+            errors={{
+              purchase_price: getErrorMessage(errors.purchase_price),
+              rent_price: getErrorMessage(errors.rent_price),
+              rent_option: getErrorMessage(errors.rent_option),
+            }}
           />
         );
       case 6:
-        return <SummaryForm formData={formData} />;
+        return <SummaryForm watch={watch} />;
       default:
         return null;
     }
@@ -99,98 +126,34 @@ export default function AddProductScreen() {
       navigation.goBack();
     }
   };
-  const handleSubmit = async () => {
-    if (!user) {
-      Alert.alert('Error', 'You must be logged in to create a product');
-      return;
-    }
-    try {
-      const productData = {
-        title: formData.title,
-        description: formData.description,
-        categories: formData.categories,
-        product_image: formData.product_image,
-        purchase_price: formData.purchase_price,
-        rent_price: formData.rent_price,
-        rent_option: formData.rent_option,
-        seller: user.id,
-      };
 
-      await createProduct(productData as any);
+  const handleNext = async () => {
+    let isValid = false;
 
-      Alert.alert('Success', 'Product created successfully', [
-        {
-          text: 'OK',
-          onPress: () => navigation.goBack(),
-        },
-      ]);
-    } catch (error: any) {
-      console.error('Product creation error:', error);
-
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.message ||
-        'Failed to create product';
-
-      Alert.alert('Error', errorMessage);
-    }
-  };
-
-  const handleNext = () => {
-    if (!validateStep(currentStep)) {
-      return;
-    }
-
-    if (currentStep < TOTAL_STEPS) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-  const validateStep = (step: number): boolean => {
-    switch (step) {
+    switch (currentStep) {
       case 1:
-        if (!formData.title.trim()) {
-          Alert.alert('Error', 'Please enter a product title');
-          return false;
-        }
-        return true;
+        isValid = await trigger('title');
+        break;
       case 2:
-        if (formData.categories.length === 0) {
-          Alert.alert('Error', 'Please select at least one category');
-          return false;
-        }
-        return true;
+        isValid = await trigger('categories');
+        break;
       case 3:
-        if (!formData.description.trim()) {
-          Alert.alert('Error', 'Please enter a product description');
-          return false;
-        }
-        return true;
+        isValid = await trigger('description');
+        break;
       case 4:
-        if (!formData.product_image) {
-          Alert.alert('Error', 'Please upload a product image');
-          return false;
-        }
-        return true;
+        isValid = await trigger('product_image');
+        break;
       case 5:
-        if (
-          !formData.purchase_price ||
-          parseFloat(formData.purchase_price) < 0
-        ) {
-          Alert.alert('Error', 'Please enter a valid purchase price');
-          return false;
-        }
-        if (!formData.rent_price || parseFloat(formData.rent_price) < 0) {
-          Alert.alert('Error', 'Please enter a valid rent price');
-          return false;
-        }
-        if (formData.purchase_price === '0' && formData.rent_price === '0') {
-          Alert.alert('Error', 'Please set a purchase price or a rent price');
-          return false;
-        }
-        return true;
-      default:
-        return true;
+        isValid = await trigger([
+          'purchase_price',
+          'rent_price',
+          'rent_option',
+        ]);
+        break;
+    }
+
+    if (isValid && currentStep < TOTAL_STEPS) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
@@ -211,7 +174,7 @@ export default function AddProductScreen() {
         </Button>
         <Button
           mode="contained"
-          onPress={currentStep === TOTAL_STEPS ? handleSubmit : handleNext}
+          onPress={currentStep === TOTAL_STEPS ? handleSubmit(onSubmit) : handleNext}
           style={styles.nextButton}
           loading={isLoading}
           disabled={isLoading}
