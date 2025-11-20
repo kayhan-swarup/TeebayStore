@@ -1,6 +1,16 @@
 import * as Yup from 'yup';
 import { Category } from '../constants';
 
+export const loginSchema = Yup.object().shape({
+  email: Yup.string()
+    .trim()
+    .required('Email is required')
+    .email('Email is invalid'),
+
+  password: Yup.string()
+    .required('Password is required'),
+});
+
 export const registerSchema = Yup.object().shape({
   firstName: Yup.string()
     .trim()
@@ -61,7 +71,7 @@ export const addProductSchema = Yup.object().shape({
           'outdoor',
           'toys',
         ] as const)
-        .required()
+        .required(),
     )
     .min(1, 'Please select at least one category')
     .required('Categories are required')
@@ -72,7 +82,7 @@ export const addProductSchema = Yup.object().shape({
     .trim()
     .required('Product description is required')
     .min(10, 'Description must be at least 10 characters')
-    .max(500, 'Description must not exceed 500 characters'),
+    .max(500, 'Description must not exceed 200 characters'),
 
   // Step 4: Image
   product_image: Yup.mixed()

@@ -17,18 +17,35 @@ import { ErrorMessage } from '../../components/common/ErrorMessage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { biometricService } from '../../services/biometric.service';
 import { ActivityIndicator } from 'react-native-paper';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { loginSchema } from '../../validations/schema';
+
+type LoginFormData = {
+  email: string;
+  password: string;
+};
 
 export default function LoginScreen() {
   const navigation = useNavigation();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {},
-  );
   const [showBiometric, setShowBiometric] = useState(false);
   const [biometricLoading, setBiometricLoading] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
+
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: yupResolver(loginSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
   const checkBiometricAvailability = async () => {
     const available = await biometricService.isBiometricAvailable();
@@ -72,36 +89,17 @@ export default function LoginScreen() {
     }
   };
 
-  const validate = () => {
-    const newErrors: { email?: string; password?: string } = {};
-
-    if (!email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email is invalid';
-    }
-
-    if (!password) {
-      newErrors.password = 'Password is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
   const handleSignupPress = () => {
     navigation.navigate('Register' as never);
   };
 
-  const handleLogin = async () => {
-    console.log('Login pressed');
-    if (!validate()) return;
-    console.log('Validated');
+  const onSubmit = async (data: LoginFormData) => {
     clearError();
 
     try {
       await login({
-        email: email.trim(),
-        password,
+        email: data.email.trim(),
+        password: data.password,
       });
       const available = await biometricService.isBiometricAvailable();
       const enabled = await biometricService.isBiometricEnabled();
@@ -123,8 +121,8 @@ export default function LoginScreen() {
                 );
                 if (authenticated) {
                   await biometricService.saveCredentials(
-                    email.trim(),
-                    password,
+                    data.email.trim(),
+                    data.password,
                   );
                   setShowBiometric(true);
                   Alert.alert('Success', 'Biometric login enabled!');
@@ -157,39 +155,46 @@ export default function LoginScreen() {
           {error && <ErrorMessage message={error} onDismiss={clearError} />}
 
           {/* Email Input */}
-          <TextInput
-            label="Email"
-            placeholder="Email"
-            value={email}
-            onChangeText={text => {
-              setEmail(text);
-              if (errors.email) setErrors({ ...errors, email: undefined });
-            }}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            error={errors.email}
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Email"
+                placeholder="Email"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                error={errors.email?.message}
+              />
+            )}
           />
 
           {/* Password Input */}
-          <TextInput
-            label="Password"
-            placeholder="Password"
-            value={password}
-            onChangeText={text => {
-              setPassword(text);
-              if (errors.password)
-                setErrors({ ...errors, password: undefined });
-            }}
-            secureTextEntry
-            autoCapitalize="none"
-            error={errors.password}
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Password"
+                placeholder="Password"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                secureTextEntry
+                autoCapitalize="none"
+                error={errors.password?.message}
+              />
+            )}
           />
 
           {/* Login Button */}
           <View style={styles.buttonContainer}>
             <Button
-              onPress={handleLogin}
+              onPress={handleSubmit(onSubmit)}
               loading={isLoading}
               disabled={isLoading}
               style={styles.loginButton}
